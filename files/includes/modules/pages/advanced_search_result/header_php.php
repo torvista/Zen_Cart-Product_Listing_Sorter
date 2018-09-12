@@ -1,6 +1,6 @@
 <?php
 //MOD Product Listing Sorter 1 of 4
-$debug = '1';//1 or 0, show debugging information
+$debug = '0';//1 or 0, show debugging information
 $debug_prefix = '('.str_replace(DIR_FS_CATALOG, '', str_replace('\\','/',__FILE__)).' line ';
 //eof PLS
 /**
