@@ -6,10 +6,10 @@ $debug_prefix = '('.str_replace(DIR_FS_CATALOG, '', str_replace('\\','/',__FILE_
  * Header code file for the Advanced Search Results page
  *
  * @package page
- * @copyright Copyright 2003-2011 Zen Cart Development Team
+ * @copyright Copyright 2003-2016 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: header_php.php 19702 2011-10-05 20:33:06Z wilt $
+ * @version $Id: Author: DrByte  Mon Feb 8 15:28:43 2016 -0500 Modified in v1.5.5 $
  */
 
 // This should be first line of the script:
@@ -37,6 +37,8 @@ if ( (isset($_GET['keyword']) && (empty($_GET['keyword']) || $_GET['keyword']==H
   $pfrom = '';
   $pto = '';
   $keywords = '';
+  $dfrom_array = array();
+  $dto_array = array();
 
   if (isset($_GET['dfrom'])) {
     $dfrom = (($_GET['dfrom'] == DOB_FORMAT_STRING) ? '' : $_GET['dfrom']);
@@ -206,7 +208,7 @@ $zco_notifier->notify('NOTIFY_SEARCH_COLUMNLIST_STRING');
 
 //  $select_str = "select distinct " . $select_column_list . " m.manufacturers_id, p.products_id, pd.products_name, p.products_price, p.products_tax_class_id, IF(s.status = 1, s.specials_new_products_price, NULL) as specials_new_products_price, IF(s.status = 1, s.specials_new_products_price, p.products_price) as final_price ";
 $select_str = "SELECT DISTINCT " . $select_column_list .
-              " m.manufacturers_id, p.products_id, pd.products_name, p.products_price, p.products_tax_class_id, p.products_price_sorter, p.products_qty_box_status, p.master_categories_id ";
+              " p.products_sort_order, m.manufacturers_id, p.products_id, pd.products_name, p.products_price, p.products_tax_class_id, p.products_price_sorter, p.products_qty_box_status, p.master_categories_id ";
 
 if ((DISPLAY_PRICE_WITH_TAX == 'true') && ((isset($_GET['pfrom']) && zen_not_null($_GET['pfrom'])) || (isset($_GET['pto']) && zen_not_null($_GET['pto'])))) {
   $select_str .= ", SUM(tr.tax_rate) AS tax_rate ";
@@ -373,6 +375,7 @@ if (!isset($keywords) || $keywords == "") {
   }
 $order_str = $multi_sort;
 if ($debug) echo $debug_prefix.__LINE__.') '.'$order_str=' . $order_str . '<br>';
+//eof
 if (isset($_GET['dfrom']) && zen_not_null($_GET['dfrom']) && ($_GET['dfrom'] != DOB_FORMAT_STRING)) {
   $where_str .= " AND p.products_date_added >= :dateAdded";
   $where_str = $db->bindVars($where_str, ':dateAdded', zen_date_raw($dfrom), 'date');
@@ -423,6 +426,9 @@ if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
 //die('I SEE ' . $_GET['sort'] . ' - ' . PRODUCT_LISTING_DEFAULT_SORT_ORDER);
+//steve MOD Product Listing Sorter
+if (!isset($_GET['product_listing_sorter_id']) || (int)$_GET['product_listing_sorter_id'] == 0) {
+//eof
 if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0 , 1) > sizeof($column_list))) {
   for ($col=0, $n=sizeof($column_list); $col<$n; $col++) {
     if ($column_list[$col] == 'PRODUCT_LIST_NAME') {
@@ -441,8 +447,8 @@ if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (s
   if (PRODUCT_LISTING_DEFAULT_SORT_ORDER == '') {
     $_GET['sort'] = '20a';
   }
-} elseif (!isset($_GET['product_listing_sorter_id']) || $_GET['product_listing_sorter_id']==0){
-  $sort_col = substr($_GET['sort'], 0, 1);
+} else {
+  $sort_col = substr($_GET['sort'], 0 , 1);
   $sort_order = substr($_GET['sort'], -1);
   $order_str = ' order by ';
   switch ($column_list[$sort_col-1]) {
@@ -469,15 +475,17 @@ if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (s
     $order_str .= "p.products_price_sorter " . ($sort_order == 'd' ? "desc" : "") . ", pd.products_name";
     break;
   } 	if ($debug) echo $debug_prefix.__LINE__.') $order_str='.$order_str.'<br>';
+  }
 }
 //$_GET['keyword'] = zen_output_string_protected($_GET['keyword']);
 
 $listing_sql = $select_str . $from_str . $where_str . $order_str;
 // Notifier Point
 $zco_notifier->notify('NOTIFY_SEARCH_ORDERBY_STRING', $listing_sql);
+
 $breadcrumb->add(NAVBAR_TITLE_1, zen_href_link(FILENAME_ADVANCED_SEARCH));
 $breadcrumb->add(NAVBAR_TITLE_2);
-
+$breadcrumb->add(zen_output_string_protected($keywords));
 
 $result = new splitPageResults($listing_sql, MAX_DISPLAY_PRODUCTS_LISTING, 'p.products_id', 'page');
 if ($result->number_of_rows == 0) {

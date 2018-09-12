@@ -15,7 +15,7 @@ if (!defined('IS_ADMIN_FLAG')) {
 // build sorter dropdown
   if (PRODUCT_LISTING_SORTER == 'true') {
 
-    if ((int)$_GET['product_listing_sorter_id'] == 0) {
+    if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] == 0) {
       $prefix = TEXT_PRODUCT_LISTING_SORTER_NAMES;
     } else {
       $prefix = TEXT_PRODUCT_LISTING_SORTER_NAMES_RESET;

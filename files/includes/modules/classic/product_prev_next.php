@@ -72,7 +72,7 @@ if (PRODUCT_INFO_PREVIOUS_NEXT != 0) {
 //MOD Product Listing Sorter
 if (isset($_SESSION['listing_sql'])) {
   $sql = $_SESSION['listing_sql'];	
-} else {
+} else {//eof MOD Product Listing Sorter
   $sql = "select p.products_id, p.products_model, p.products_price_sorter, pd.products_name, p.products_sort_order
           from   " . TABLE_PRODUCTS . " p, "
   . TABLE_PRODUCTS_DESCRIPTION . " pd, "

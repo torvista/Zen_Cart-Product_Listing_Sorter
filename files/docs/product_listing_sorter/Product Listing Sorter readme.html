@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-GB">
+<html lang="en-GB" xml:lang="en-GB" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
-    <title>Product Listing Sorter readme</title>
+    <title>Product Listing Sorter 2.1 readme</title>
     <style type="text/css">
 <!--
 body {
@@ -64,27 +64,35 @@ li {
 -->
 </style> </head>
   <body>
-    <h1>Products Listing Sorter v2.0</h1>
+    <h1>Product Listing Sorter</h1>
     <p>License: GPL 2.0 as per included license.txt<br />
-      Version: 2.0, tested on Zen Cart v1.51.<br />
-      Support Thread: <a href="http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down"
-
-        target="_blank">http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down</a><br />
+      Version: 2.2, tested on Zen Cart v1.55f.<br />
+      Support Thread: <a target="_blank" href="http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down">http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down</a><br />
     </p>
     <h2>What does this mod do?</h2>
-    <p>This mod adds a drop-down menu to the product listing and the advanced
+    <p>This mod <strong>adds</strong> a new drop-down menu to the product listing page and the advanced
       search results page that can be customised to offer any search options you
-      want. Why? I don't use the column titles on my site design.</p>
-    <p>This is NOT a filter: <strong>all</strong> the products are displayed in
-      the chosen order and it works in conjunction with the stock Manufacturer/Category
-      filter drop-down and the Alpha &quot;Sorter&quot; (misnamed as its a filter)
-      drop-down.</p>
+      want.<br />
+      Why? I don't use the column titles on my site (which would normally be used for sorting).</p>
+    <p>This mod is NOT a filter: <strong>all</strong> the products are displayed in
+      the chosen order and it works in conjunction with the stock
+      Manufacturer/Category filter drop-down and the Alpha "Sorter" (misnamed as
+      it is actually a filter) drop-down.</p>
     <p>The drop-down is enabled by an admin configuration setting:<br />
           Admin-&gt;Configuration-&gt;Product Listing-&gt;Include Product
       Listing Sorter Dropdown (mod)</p>
+    <h2>How the mod works</h2>
+    <p>The drop-down adds another GET parameter to the urls that are used by the
+      product-listing-name links and the return-to-listing button (in the
+      prev-listing-next nav buttons) to preserve the listing sort order.</p>
+    <p>The product listing sql for the sorted/filtered product listing is passed
+      to a new session variable for use by prev-next. </p>
     <h2>Upgrading from a previous version</h2>
-    <p>You should completely uninstall/unmerge changes made by the the previous versions, return all files to default AND then check your site functionality BEFORE installing this version.<br />
-    This version 2.0 is completely different and is not an enhancement of previous versions.</p>
+    <p>You should completely uninstall/unmerge changes made by the the previous
+      1.x versions, return all files to default AND then check your site
+      functionality BEFORE installing this version.</p>
+    <p>Version 2.x onwards is
+      <strong>completely different</strong> to the 1.x versions.</p>
     <h2>Installation</h2>
     <p>This fileset has been tested by dropping directly into a new Zen Cart
       1.51 installation. You should test it similarly before integrating it into
@@ -109,20 +117,19 @@ li {
         \includes\languages\spanish\extra_definitions\product_listing_sorter.php
         - <strong>NEW</strong> (spanish constants and <strong>sorting
           definitions</strong>)</li>
+      <li>\includes\modules\product_listing_sorter.php - <strong>NEW</strong> (generates the Product Listing Sorter drop-down code)</li>
       <li>\includes\modules\pages\advanced_search_result\header_php.php - <span
 
           class="warning">CORE file overwrite, merge differences</span> (creates
         "order by" sql clause)</li>
       <li>\includes\modules\pages\index\main_template_vars.php - <span class="warning">CORE
-          file overwrite, merge differences</span> (unset $_GET['multi_sort_id']
-        when not in use)</li>
+          file overwrite, merge differences</span> (unset
+        $_GET['product_listing_sorter_id'] when not in use)</li>
       <li>\includes\modules\YOUR_TEMPLATE\product_listing.php - <strong>OVERRIDE</strong>
         (added GETs to carry filter parameters to product info page) </li>
-      <li>\includes\modules\YOUR_TEMPLATE\product_listing_sorter.php - <strong>OVERRIDE</strong>
-        (generates the Product Listing Sorter drop-down code)</li>
       <li>\includes\modules\YOUR_TEMPLATE\product_prev_next.php - <strong>OVERRIDE</strong>
         (picks up the filtered/sorted sql listing from a SESSION variable to
-        display the same order when using prev/next) </li>
+      display the same order when using prev/next) </li>
       <li>\includes\templates\YOUR_TEMPLATE\templates\tpl_advanced_search_result_default.php
         - <strong>OVERRIDE</strong> (template file for the physical location of
         the Product Listing Sorter drop-down on this page.)</li>
@@ -133,15 +140,18 @@ li {
         - <strong>OVERRIDE</strong> (changed to use the filtered/sorted product
         listing when browsing and re-display the same listing when returning
         from the product info page.)</li>
+      <li>\includes\templates\YOUR_TEMPLATE\sideboxes\tpl_categories.php - <strong>OVERRIDE</strong>
+        (changed to use new parameters and carry the chosed sort order through
+        to another category when selected from the sidebox.)</li>
       <li>includes\application_top.php - <span class="warning">CORE file
-          overwrite, merge differences</span> (decontamination of new <span>$_GET['multi_sort_id']</span>)</li>
+          overwrite, merge differences</span> (decontamination of new <span>$_GET['product_listing_sorter_id']</span>)</li>
     </ol>
     <p>Copy/merge the files into the correct directories: the files marked with
       the \YOUR_TEMPLATE path need to go into your template directories or
       CLASSIC if you are just testing on a new installation, NOT into
       directories literally called "YOUR_TEMPLATE".</p>
     <h3>2) Install Admin Configuration Option</h3>
-    <p>Copy the code from \sql\product_listing_sorter_install.sql and paste it
+    <p>Copy the code from \docs\sql\product_listing_sorter_install.sql and paste it
       into Admin-&gt;Install SQL Patches and Send.</p>
     <p>This will install a new option in:<br />
           Admin-&gt;Configuration-&gt;Product Listing-&gt;Include Product
@@ -167,15 +177,56 @@ li {
       product listing, so making a mistake here will give you a blank white
       page.</p>
     <p>Edit or comment out the lines as required.</p>
+    <h3>Setting a default sort order that does not reference a displayed column.</h3>
+    <p>The default sort order can be defined in the admin as detailed
+      below...but only in terms of the columns that are displayed.<br />
+      If you want to use a different criteria, for example newest first, that
+      requires a code change.</p>
+    <p>Here is an example of using the products_date_added as criteria.</p>
+    <p>a) add the criteria to the sql in default_filter.php.<br />
+      This sql appears in two places.</p>
+    <p>Change</p>
+    <p class="code">// We show them all<br />
+      $listing_sql = "select " . $select_column_list . " p.products_id,
+      p.products_type, p.master_categories_id, p.manufacturers_id,
+      p.products_price, p.products_tax_class_id, pd.products_description,.....</p>
+    <p>to (noting the "p.products_date_added, ")</p>
+    <p><span class="code">// We show them all<br />
+        $listing_sql = "select " . $select_column_list . " p.product_date_added,
+        p.products_id, p.products_type, p.master_categories_id,
+        p.manufacturers_id, p.products_price, p.products_tax_class_id,
+        pd.products_description,.....</span></p>
+    <p>b) Add the sorting clause that uses that criteria.</p>
+    <p>Change</p>
+    <p class="code">// sort by products_sort_order when
+      PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank<br />
+      // for reverse, descending order use:<br />
+      // $listing_sql .= " order by p.products_sort_order desc,
+      pd.products_name";<br />
+      $listing_sql .= " order by p.products_sort_order, pd.products_name";<br />
+      break;</p>
+    <p>to</p>
+    <p class="code">// sort by products_sort_order when
+      PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank<br />
+      // for reverse, descending order use:<br />
+      // $listing_sql .= " order by p.products_sort_order desc,
+      pd.products_name";<br />
+      //$listing_sql .= " order by p.products_sort_order, pd.products_name";<br />
+      $listing_sql .= " order by p.products_date_added DESC,
+      pd.products_name";//MOD<br />
+      break; </p>
     <h2>Debugging </h2>
-    <p>Understanding the sorting and filtering mechanisms was difficult and so I
-      have left many debugging statements in the code. These can be enabled by
-      setting the variable to 1 at the start of the file:</p>
+    <p>Understanding the sorting and filtering mechanisms in Zen Cart is &quot;difficult&quot; to say the least. and so I
+      have left debugging statements in the code. These can be enabled by
+  setting the variable to 1 at the start of the file:</p>
     <p class="code">$debug = '0';//1 or 0, show debugging information </p>
-    <p>I have tested this mod in a new Zen Cart 1.51 installation using the
-      Classic template.</p>
     <p>For further debugging I recommend installing the Superglobals plugin to
-      show what variables are being set.</p>
+    show what variables are being set.</p>
+    <h2>Problems</h2>
+    <p>If you find the sorting by price is not correct, it is possible the
+      product_price_sorter field in the database is out of sync with the prices.<br />
+      Run Admin-&gt;Tools-&gt;Store Manager-&gt;Update ALL Products Price
+      Sorter.</p>
     <h2>Uninstall</h2>
     <h3>1) Uninstall the Admin Configuration Option</h3>
     <p>Copy the code from \sql\product_listing_sorter_uninstall.sql and paste it
@@ -187,34 +238,30 @@ li {
     <p>Delete the override files and unmerge the modifications to the core
       files.</p>
     <h2>Support </h2>
-    <p>From the community at <a href="http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down"
-
-        target="_blank">http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down</a></p>
+    <p>From the community at <a target="_blank" href="http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down">http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down</a></p>
     <p>-----------------------------------------------------------------------------------------------</p>
     <h1>Background</h1>
     <p>I wrote this information to help my goldfish memory.</p>
-    <h2>Zen Cart 1.51 without modifications</h2>
+    <h2>Zen Cart 1.55x without modifications</h2>
     <p>In the product listing there are two optional filters available.</p>
     <p>1) The Category/Manufacturer filter</p>
-    <p><img width="537" height="24" src="images/admin_option_display_category_manufacturer_filter.gif"
+    <p><img width="537" height="24" class="img" alt="Admin option: display category-manufacturer filter"
 
-        alt="Admin option: display category-manufacturer filter" class="img" /></p>
+        src="images/admin_option_display_category_manufacturer_filter.gif" /></p>
     <p>which displays this</p>
-    <p><img width="232" height="31" src="images/category_manufacturer_filter_zc151.gif"
+    <p><img width="232" height="31" class="img" alt="product listing category-manufacturer filter"
 
-        alt="product listing category-manufacturer filter" class="img" /></p>
+        src="images/category_manufacturer_filter_zc151.gif" /></p>
     <p>2) The Product Listing Alpha filter (misnamed as an alpha sorter)</p>
-    <p><img width="537" height="22" src="images/admin_option_include_product_listing_alpha_sorter_dropdown.gif"
+    <p><img width="537" height="22" class="img" alt="Admin option: display alpha filter"
 
-        alt="Admin option: display alpha filter" class="img" /></p>
+        src="images/admin_option_include_product_listing_alpha_sorter_dropdown.gif" /></p>
     <p>which displays this</p>
-    <p><img width="238" height="33" src="images/product_listing_alpha_sorter_dropdown_zc151.gif"
+    <p><img width="238" height="33" class="img" alt="product listing alpha sorter"
 
-        alt="product listing alpha sorter" class="img" /></p>
+        src="images/product_listing_alpha_sorter_dropdown_zc151.gif" /></p>
     <p>Both can be enabled</p>
-    <p><img width="360" height="35" src="images/cat_man_fiilter_alpha_sorter_both_zc151.gif"
-
-        alt="product listing filters" class="img" /></p>
+    <p><img width="360" height="35" class="img" alt="product listing filters" src="images/cat_man_fiilter_alpha_sorter_both_zc151.gif" /></p>
     <h3>Default Product Listing Sort Order</h3>
     <p>This product listing sort order is handled by
       /includes/index_filters/default_filter.php using the value in
@@ -227,9 +274,9 @@ li {
       the default sort order. </p>
     <p>In Admin-&gt;Configuration-&gt;Product Listing there are options which
       enable the display of the columns available.</p>
-    <p><img width="785" height="262" src="images/admin_option_display_product_listing_default_sort_order.gif"
+    <p><img width="785" height="262" class="img" alt="admin option: display product listing default sort order"
 
-        alt="admin option: display product listing default sort order" class="img" /></p>
+        src="images/admin_option_display_product_listing_default_sort_order.gif" /></p>
     <p>What is not immediately apparent is that you can set the display order of
       those columns, eg. where Product Image is column 1, Product Name is column
       2 and Product Price is column 3 as shown in the example.</p>
@@ -261,19 +308,23 @@ li {
       switch ($column_list[$sort_col-1]) {</p>
     <p>where the column to use for sorting is extracted/identified, followed by
       the a or d for the sort_order.</p>
-    <p>So that's the default setting.</p>
-    <h2>How the mod works</h2>
-    <p>The drop-down adds another GET parameter to the urls that are used by the
-      product-listing-name links and the return-to-listing button (in the
-      prev-listing-next nav buttons) to preserve the listing sort order.</p>
-    <p>The sql for the sorted/filtered product listing is passed to a session
-      variable for use by prev-next.</p>
+    <p>So that's the default setting. </p>
     <h2>Version History</h2>
-    <h3>v2.0 2013-08-30 - torvista</h3>
-    <p>Code completely rewritten  to add to rather than replace existing filters
+    <h3>v2.2 2018-09-12 - torvista</h3>
+    <p>Actually all these changes were done in 2016 but never got uploaded...sorry!<br />
+      advanced_search_result.php: code edit to fix bug caused by using sorter
+      on a search result.<br />
+      added parameters to category sidebox to carry the selected sort order
+      through to another category. <br />
+    minor corrections and additional information to readme.</p>
+    <h3>v2.1 2017-09 - jeking</h3>
+  <p>Minor updates for compatibility with Zen Cart 1.5.5.</p>
+  <h3>v2.0 2013-08-30 - torvista</h3>
+    <p>Code completely rewritten to add to rather than replace existing filters
       and make use of Zen Cart 1.60 drop-down listing code.<br />
-      Functionality expanded to maintain the selected filter and sort order through to
-      the product info page/prev-next navigation and back to the listing.<br />
+      Functionality expanded to maintain the selected filter and sort order
+      through to the product info page/prev-next navigation and back to the
+      listing.<br />
       Readme updated.<br />
     </p>
     <h3>v1.2 2013-01-13 - torvista</h3>

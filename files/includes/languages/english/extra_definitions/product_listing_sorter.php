@@ -22,7 +22,7 @@ Newest:p.products_date_added DESC;
 Most Popular: p.products_ordered DESC
 ');
 
-define('TEXT_PRODUCT_LISTING_SORTER', 'Sort by: ');//label for drop-down
+define('TEXT_PRODUCT_LISTING_SORTER', 'Sort by:');//label for drop-down
 define('TEXT_PRODUCT_LISTING_SORTER_NAMES', 'Choose..');//first item in drop-down when no sorting options selected
 define('TEXT_PRODUCT_LISTING_SORTER_NAMES_RESET', '-Reset-');//first item in drop-down when a sorting option is already in use
 
