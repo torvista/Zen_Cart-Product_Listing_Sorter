@@ -1,7 +1,8 @@
 <?php
-//MOD Product Listing Sorter
-$debug = '0';//1 or 0, show debugging information 
+//MOD Product Listing Sorter 1 of 4
+$debug = '1';//1 or 0, show debugging information
 $debug_prefix = '('.str_replace(DIR_FS_CATALOG, '', str_replace('\\','/',__FILE__)).' line ';
+//eof PLS
 /**
  * Header code file for the Advanced Search Results page
  *
@@ -357,25 +358,24 @@ if (!isset($keywords) || $keywords == "") {
   }
 //die('I SEE ' . $where_str);
 
-//MOD Product Listing Sorter
-  if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] > 0) {
-      $multi_sort_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);
-      for ($j=0, $n=sizeof($multi_sort_list_search); $j<$n; $j++) {
+//MOD Product Listing Sorter 2 of 4
+if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] > 0) {
+    $multi_sort_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);
+    for ($j = 0, $n = sizeof($multi_sort_list_search); $j < $n; $j++) {
         if ((int)$_GET['product_listing_sorter_id'] == $j) {
-          $elements_multi = explode(':', $multi_sort_list_search[$j]);
-          $pattern_multi = str_replace(',', '', $elements_multi[1]);
-          $multi_sort = " order by " . $pattern_multi;
-		  if ($debug) echo $debug_prefix.__LINE__.') '.'$multi_sort='.$multi_sort.'<br />'; 
-          break;
+            $elements_multi = explode(':', $multi_sort_list_search[$j]);
+            $pattern_multi = str_replace(',', '', $elements_multi[1]);
+            $multi_sort = " order by " . $pattern_multi;
+            if ($debug) echo $debug_prefix . __LINE__ . ') ' . '$multi_sort=' . $multi_sort . '<br>';
+            break;
         }
-      }
-
-  } else {
-      $multi_sort = '';
-  }
+    }
+} else {
+    $multi_sort = '';
+}
 $order_str = $multi_sort;
-if ($debug) echo $debug_prefix.__LINE__.') '.'$order_str=' . $order_str . '<br>';
-//eof
+if ($debug) echo $debug_prefix . __LINE__ . ') ' . '$order_str=' . $order_str . '<br>';
+//eof PLS 2 of 4
 if (isset($_GET['dfrom']) && zen_not_null($_GET['dfrom']) && ($_GET['dfrom'] != DOB_FORMAT_STRING)) {
   $where_str .= " AND p.products_date_added >= :dateAdded";
   $where_str = $db->bindVars($where_str, ':dateAdded', zen_date_raw($dfrom), 'date');
@@ -426,14 +426,15 @@ if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
 //die('I SEE ' . $_GET['sort'] . ' - ' . PRODUCT_LISTING_DEFAULT_SORT_ORDER);
-//steve MOD Product Listing Sorter
+//MOD Product Listing Sorter 3 of 4
 if (!isset($_GET['product_listing_sorter_id']) || (int)$_GET['product_listing_sorter_id'] == 0) {
-//eof
+if ($debug) echo $debug_prefix . __LINE__ . ') ' . 'PRODUCT_LISTING_DEFAULT_SORT_ORDER=' . PRODUCT_LISTING_DEFAULT_SORT_ORDER . '<br>';
+//eof PLS 3 of 4
 if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0 , 1) > sizeof($column_list))) {
   for ($col=0, $n=sizeof($column_list); $col<$n; $col++) {
     if ($column_list[$col] == 'PRODUCT_LIST_NAME') {
       $_GET['sort'] = $col+1 . 'a';
-      $order_str = ' order by pd.products_name';
+      $order_str .= ' order by pd.products_name';//steve added dot to = as per 156 change
       break;
     } else {
       // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER ia left blank
@@ -474,9 +475,12 @@ if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (s
     //        $order_str .= "final_price " . ($sort_order == 'd' ? "desc" : "") . ", pd.products_name";
     $order_str .= "p.products_price_sorter " . ($sort_order == 'd' ? "desc" : "") . ", pd.products_name";
     break;
-  } 	if ($debug) echo $debug_prefix.__LINE__.') $order_str='.$order_str.'<br>';
   }
 }
+//MOD Product Listing Sorter 4 of 4
+if ($debug) echo $debug_prefix.__LINE__.') $order_str='.$order_str.'<br>';
+}
+//eof PLS 4 of 4
 //$_GET['keyword'] = zen_output_string_protected($_GET['keyword']);
 
 $listing_sql = $select_str . $from_str . $where_str . $order_str;
