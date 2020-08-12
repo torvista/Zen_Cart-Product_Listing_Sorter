@@ -365,23 +365,20 @@ if (!isset($keywords) || $keywords == "") {
   }
 
 //MOD Product Listing Sorter 2 of 4
-  if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] > 0) {
-      $multi_sort_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);
-      for ($j=0, $n=count($multi_sort_list_search); $j<$n; $j++) {
-        if ((int)$_GET['product_listing_sorter_id'] == $j) {
-          $elements_multi = explode(':', $multi_sort_list_search[$j]);
-          $pattern_multi = str_replace(',', '', $elements_multi[1]);
-          $multi_sort = " order by " . $pattern_multi;
-		  if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $multi_sort=' . $multi_sort . '<br>';
-          break;
+if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] > 0) {
+    $multi_sort_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);
+    for ($j = 0, $n = count($multi_sort_list_search); $j < $n; $j++) {
+        if ((int)$_GET['product_listing_sorter_id'] === $j) {
+            $elements_multi = explode(':', $multi_sort_list_search[$j]);
+            $pattern_multi = str_replace(',', '', $elements_multi[1]);
+            $multi_sort = " ORDER BY " . $pattern_multi;
+            break;
         }
-      }
-
-  } else {
-      $multi_sort = '';
-  }
-$order_str = $multi_sort;
-if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $order_str=' . $order_str . '<br>';
+    }
+} else {
+    $multi_sort = '';
+}
+if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $multi_sort=' . $multi_sort . '<br>';
 //eof PLS 2 of 4
 if (isset($_GET['dfrom']) && zen_not_null($_GET['dfrom']) && ($_GET['dfrom'] != DOB_FORMAT_STRING)) {
   $where_str .= " AND p.products_date_added >= :dateAdded";
@@ -441,9 +438,11 @@ if ((DISPLAY_PRICE_WITH_TAX == 'true') && ((isset($_GET['pfrom']) && zen_not_nul
 if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
-//MOD Product Listing Sorter 3 of 4
-if (!isset($_GET['product_listing_sorter_id']) || (int)$_GET['product_listing_sorter_id'] == 0) {
-//eof
+//MOD Product Listing Sorter
+if (!empty($product_listing_sorter_id) && $product_listing_sorter_id > 0) {
+    $order_str = $multi_sort;
+} else {
+//eof PLS
 if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0 , 1) > sizeof($column_list))) {
   for ($col=0, $n=sizeof($column_list); $col<$n; $col++) {
     if ($column_list[$col] == 'PRODUCT_LIST_NAME') {
@@ -490,11 +489,11 @@ if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (s
     $order_str .= "p.products_price_sorter " . ($sort_order == 'd' ? "desc" : "") . ", pd.products_name";
     break;
   }
-//torvista  MOD Product Listing Sorter 4 of 4  
-  if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $order_str='.$order_str.'<br>';
- //eof PLS 4 of 4 
   }
 }
+//MOD Product Listing Sorter 4 of 4
+if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $order_str='.$order_str.'<br>';
+//eof PLS 4 of 4
 //$_GET['keyword'] = zen_output_string_protected($_GET['keyword']);
 
 $listing_sql = $select_str . $from_str . $where_str . $order_str;
