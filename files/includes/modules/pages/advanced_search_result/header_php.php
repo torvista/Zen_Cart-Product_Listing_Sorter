@@ -1,16 +1,14 @@
 <?php
 //MOD Product Listing Sorter 1 of 4
-$debug = '0';//1 or 0, show debugging information
-$debug_prefix = '('.str_replace(DIR_FS_CATALOG, '', str_replace('\\','/',__FILE__)).' line ';
-//eof PLS
+//set PLS debugging in default_filter override
 /**
  * Header code file for the Advanced Search Results page
  *
  * @package page
- * @copyright Copyright 2003-2016 Zen Cart Development Team
+ * @copyright Copyright 2003-2019 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: Author: DrByte  Mon Feb 8 15:28:43 2016 -0500 Modified in v1.5.5 $
+ * @version $Id: mc12345678 2019 Apr 30 Modified in v1.5.6b $
  */
 
 // This should be first line of the script:
@@ -19,10 +17,20 @@ $zco_notifier->notify('NOTIFY_HEADER_START_ADVANCED_SEARCH_RESULTS');
 if (!defined('KEYWORD_FORMAT_STRING')) define('KEYWORD_FORMAT_STRING','keywords');
 
 require(DIR_WS_MODULES . zen_get_module_directory('require_languages.php'));
+// set the product filters according to selected product type
+
+$typefilter = 'default';
+if (isset($_GET['typefilter'])) $typefilter = $_GET['typefilter'];
+require(zen_get_index_filters_directory($typefilter . '_filter.php'));
+
 $error = false;
 $missing_one_input = false;
 
-$_GET['keyword'] = trim($_GET['keyword']);
+if (empty($_GET['keyword'])) {
+    zen_redirect(zen_href_link(FILENAME_ADVANCED_SEARCH));
+} else {
+    trim($_GET['keyword']);
+}
 
 if ( (isset($_GET['keyword']) && (empty($_GET['keyword']) || $_GET['keyword']==HEADER_SEARCH_DEFAULT_TEXT || $_GET['keyword'] == KEYWORD_FORMAT_STRING ) ) &&
 (isset($_GET['dfrom']) && (empty($_GET['dfrom']) || ($_GET['dfrom'] == DOB_FORMAT_STRING))) &&
@@ -149,8 +157,7 @@ $define_list = array('PRODUCT_LIST_MODEL' => PRODUCT_LIST_MODEL,
 asort($define_list);
 
 $column_list = array();
-reset($define_list);
-while (list($column, $value) = each($define_list)) {
+foreach($define_list as $column => $value) {
   if ($value) $column_list[] = $column;
 }
 
@@ -209,7 +216,7 @@ $zco_notifier->notify('NOTIFY_SEARCH_COLUMNLIST_STRING');
 
 //  $select_str = "select distinct " . $select_column_list . " m.manufacturers_id, p.products_id, pd.products_name, p.products_price, p.products_tax_class_id, IF(s.status = 1, s.specials_new_products_price, NULL) as specials_new_products_price, IF(s.status = 1, s.specials_new_products_price, p.products_price) as final_price ";
 $select_str = "SELECT DISTINCT " . $select_column_list .
-              " p.products_sort_order, m.manufacturers_id, p.products_id, pd.products_name, p.products_price, p.products_tax_class_id, p.products_price_sorter, p.products_qty_box_status, p.master_categories_id ";
+              " p.products_sort_order, m.manufacturers_id, p.products_id, pd.products_name, p.products_price, p.products_tax_class_id, p.products_price_sorter, p.products_qty_box_status, p.master_categories_id, p.product_is_call ";
 
 if ((DISPLAY_PRICE_WITH_TAX == 'true') && ((isset($_GET['pfrom']) && zen_not_null($_GET['pfrom'])) || (isset($_GET['pto']) && zen_not_null($_GET['pto'])))) {
   $select_str .= ", SUM(tr.tax_rate) AS tax_rate ";
@@ -230,7 +237,7 @@ $from_str = "FROM (" . TABLE_PRODUCTS . " p
 $from_str = $db->bindVars($from_str, ':languagesID', $_SESSION['languages_id'], 'integer');
 
 if ((DISPLAY_PRICE_WITH_TAX == 'true') && ((isset($_GET['pfrom']) && zen_not_null($_GET['pfrom'])) || (isset($_GET['pto']) && zen_not_null($_GET['pto'])))) {
-  if (!$_SESSION['customer_country_id']) {
+  if (empty($_SESSION['customer_country_id'])) {
     $_SESSION['customer_country_id'] = STORE_COUNTRY;
     $_SESSION['customer_zone_id'] = STORE_ZONE;
   }
@@ -356,25 +363,25 @@ if (!isset($keywords) || $keywords == "") {
     $alpha_sort = '';
     $where_str .= $alpha_sort;
   }
-//die('I SEE ' . $where_str);
 
 //MOD Product Listing Sorter 2 of 4
-if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] > 0) {
-    $multi_sort_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);
-    for ($j = 0, $n = sizeof($multi_sort_list_search); $j < $n; $j++) {
+  if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] > 0) {
+      $multi_sort_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);
+      for ($j=0, $n=count($multi_sort_list_search); $j<$n; $j++) {
         if ((int)$_GET['product_listing_sorter_id'] == $j) {
-            $elements_multi = explode(':', $multi_sort_list_search[$j]);
-            $pattern_multi = str_replace(',', '', $elements_multi[1]);
-            $multi_sort = " order by " . $pattern_multi;
-            if ($debug) echo $debug_prefix . __LINE__ . ') ' . '$multi_sort=' . $multi_sort . '<br>';
-            break;
+          $elements_multi = explode(':', $multi_sort_list_search[$j]);
+          $pattern_multi = str_replace(',', '', $elements_multi[1]);
+          $multi_sort = " order by " . $pattern_multi;
+		  if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $multi_sort=' . $multi_sort . '<br>';
+          break;
         }
-    }
-} else {
-    $multi_sort = '';
-}
+      }
+
+  } else {
+      $multi_sort = '';
+  }
 $order_str = $multi_sort;
-if ($debug) echo $debug_prefix . __LINE__ . ') ' . '$order_str=' . $order_str . '<br>';
+if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $order_str=' . $order_str . '<br>';
 //eof PLS 2 of 4
 if (isset($_GET['dfrom']) && zen_not_null($_GET['dfrom']) && ($_GET['dfrom'] != DOB_FORMAT_STRING)) {
   $where_str .= " AND p.products_date_added >= :dateAdded";
@@ -387,9 +394,16 @@ if (isset($_GET['dto']) && zen_not_null($_GET['dto']) && ($_GET['dto'] != DOB_FO
 }
 
 $rate = $currencies->get_value($_SESSION['currency']);
+$pfrom = 0.0;
+$pto = 0.0;
+
 if ($rate) {
-  $pfrom = $_GET['pfrom'] / $rate;
-  $pto = $_GET['pto'] / $rate;
+  if (!empty($_GET['pfrom'])) {
+    $pfrom = (float)$_GET['pfrom'] / $rate;
+  }
+  if (!empty($_GET['pto'])) {
+    $pto = (float)$_GET['pto'] / $rate;
+  }
 }
 
 if (DISPLAY_PRICE_WITH_TAX == 'true') {
@@ -413,6 +427,8 @@ if (DISPLAY_PRICE_WITH_TAX == 'true') {
 }
 
 
+$order_str = '';
+
 // Notifier Point
 $zco_notifier->notify('NOTIFY_SEARCH_WHERE_STRING');
 
@@ -425,16 +441,14 @@ if ((DISPLAY_PRICE_WITH_TAX == 'true') && ((isset($_GET['pfrom']) && zen_not_nul
 if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
-//die('I SEE ' . $_GET['sort'] . ' - ' . PRODUCT_LISTING_DEFAULT_SORT_ORDER);
 //MOD Product Listing Sorter 3 of 4
 if (!isset($_GET['product_listing_sorter_id']) || (int)$_GET['product_listing_sorter_id'] == 0) {
-if ($debug) echo $debug_prefix . __LINE__ . ') ' . 'PRODUCT_LISTING_DEFAULT_SORT_ORDER=' . PRODUCT_LISTING_DEFAULT_SORT_ORDER . '<br>';
-//eof PLS 3 of 4
+//eof
 if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0 , 1) > sizeof($column_list))) {
   for ($col=0, $n=sizeof($column_list); $col<$n; $col++) {
     if ($column_list[$col] == 'PRODUCT_LIST_NAME') {
       $_GET['sort'] = $col+1 . 'a';
-      $order_str .= ' order by pd.products_name';//steve added dot to = as per 156 change
+      $order_str .= ' ORDER BY pd.products_name';
       break;
     } else {
       // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER ia left blank
@@ -476,11 +490,11 @@ if ((!isset($_GET['sort'])) || (!preg_match('/[1-8][ad]/', $_GET['sort'])) || (s
     $order_str .= "p.products_price_sorter " . ($sort_order == 'd' ? "desc" : "") . ", pd.products_name";
     break;
   }
+//torvista  MOD Product Listing Sorter 4 of 4  
+  if ($debug_pls) $debug_pls_msg .= 'header_php ' . __LINE__ . ': $order_str='.$order_str.'<br>';
+ //eof PLS 4 of 4 
+  }
 }
-//MOD Product Listing Sorter 4 of 4
-if ($debug) echo $debug_prefix.__LINE__.') $order_str='.$order_str.'<br>';
-}
-//eof PLS 4 of 4
 //$_GET['keyword'] = zen_output_string_protected($_GET['keyword']);
 
 $listing_sql = $select_str . $from_str . $where_str . $order_str;

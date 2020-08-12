@@ -13,9 +13,9 @@ if (!defined('IS_ADMIN_FLAG')) {
 }
 
 // build sorter dropdown
-if (PRODUCT_LISTING_SORTER == 'true') {
+if (PRODUCT_LISTING_SORTER === 'true') {
 
-    if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] == 0) {
+    if (isset($_GET['product_listing_sorter_id']) && (int)$_GET['product_listing_sorter_id'] === 0) {
         $prefix = TEXT_PRODUCT_LISTING_SORTER_NAMES;
     } else {
         $prefix = TEXT_PRODUCT_LISTING_SORTER_NAMES_RESET;
@@ -23,17 +23,14 @@ if (PRODUCT_LISTING_SORTER == 'true') {
     $prefix .= ':;';
     $product_sorter_list = explode(';', $prefix . trim(PRODUCT_LISTING_SORTER_LIST));
     $product_sorter_options_list = array();
-    for ($j = 0, $n = sizeof($product_sorter_list); $j < $n; $j++) {
-        $product_sorter_options_list[] = array(
-            'id' => $j,
-            'text' => substr($product_sorter_list[$j], 0, strpos($product_sorter_list[$j], ':'))
-        );
+    for ($j = 0, $n = count($product_sorter_list); $j < $n; $j++) {
+        $product_sorter_options_list[] = ['id' => $j, 'text' => substr($product_sorter_list[$j], 0, strpos($product_sorter_list[$j], ':'))];
     }
 
-    if (TEXT_PRODUCT_LISTING_SORTER != '') {
+    if (TEXT_PRODUCT_LISTING_SORTER !== '') {
+        if ($debug_pls && $debug_pls_msg !== '') echo '<div style="border:solid thin red"><b>Product Listing Sorter debugging</b><br>' . $debug_pls_msg . '</div>';
+
         echo '<label for="productListingSorter" class="inputLabel" style="float:none">' . TEXT_PRODUCT_LISTING_SORTER . '</label>';//css class "inputLabel" floats this text to the left of all the other filter boxes in classic template unless it is cancelled inline
     }
-    echo zen_draw_pull_down_menu('product_listing_sorter_id', $product_sorter_options_list,
-        (isset($_GET['product_listing_sorter_id']) ? (int)$_GET['product_listing_sorter_id'] : 0),
-        'id="productListingSorter" onchange="this.form.submit()"');
+    echo zen_draw_pull_down_menu('product_listing_sorter_id', $product_sorter_options_list, (isset($_GET['product_listing_sorter_id']) ? (int)$_GET['product_listing_sorter_id'] : 0), 'id="productListingSorter" onchange="this.form.submit()" title="' . TEXT_PRODUCT_LISTING_SORTER . '"');
 }
