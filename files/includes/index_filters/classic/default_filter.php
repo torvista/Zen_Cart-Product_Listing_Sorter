@@ -79,7 +79,7 @@ $product_listing_sorter_id = !empty($_GET['product_listing_sorter_id']) ? (int)$
 if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id =' . $product_listing_sorter_id . '<br>';
 
 switch (true) { //add category-specific clauses
-    case (strpos($cPath, '3_') === 0): //in this case, everything under category 3_:  bikes
+    case (strpos($cPath, '3_') === 0): //in this case, everything under category 3_
         $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST_BIKES);//this constant is the drop-down-list text options: specific to this category branch
         $product_listing_sorter_id = $product_listing_sorter_id === '' ? 1 : $product_listing_sorter_id;// set a default for THIS category if NO selection yet made by user
         if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': Category root 3 specific options<br>';
@@ -104,6 +104,9 @@ if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $pls_order_b
 
 if ($pls_order_by !== '') {
         $listing_sql .= $pls_order_by;
+    if (!isset($_GET['sort']) && PRODUCT_LISTING_DEFAULT_SORT_ORDER == '') {//replicating assignment in clause below: avoids php warning for not set
+        $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
+    }
     } else {
 //eof PLS 1 of 1
 if (isset($column_list)) {
@@ -179,8 +182,7 @@ if (PRODUCT_LIST_FILTER > 0) {
                        GROUP BY m.manufacturers_id, m.manufacturers_name
                        ORDER BY m.manufacturers_name";
   }
-//MOD PLS
-if (//torvista isset for php notice indefined index
+//PLS 3 of 3 for php notice undefined index
 if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {//to make available for product info page prev/next
 		 $_SESSION['listing_sql'] = $listing_sql;
 }
