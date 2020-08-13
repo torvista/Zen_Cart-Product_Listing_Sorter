@@ -1,6 +1,5 @@
-<?php //MOD Product Listing Sorter, show disabled products for specific logged in customers
-$debug_pls = false;//true/false, show debugging information
-$debug_pls_msg  = '';
+<?php //MOD Product Listing Sorter
+
 /**
  * default_filter.php  for index filters
  *
@@ -25,27 +24,6 @@ if (isset($_GET['alpha_filter_id']) && (int)$_GET['alpha_filter_id'] > 0) {
 } else {
   $alpha_sort = '';
 }
-//torvista Product Listing Sorter
-if ($debug_pls) $debug_pls_msg  .= 'default_filter ' . __LINE__ . ': $_GET[\'sort\'] =' . $_GET['sort'] . '<br>';
-if ($debug_pls && PRODUCT_LIST_ALPHA_SORTER === 'true') $debug_pls_msg  .= 'default_filter ' . __LINE__ . ': $alpha_sort=' . $alpha_sort . '<br>';
-    $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);//this constant is the drop-down-list text options
- if (!empty($_GET['product_listing_sorter_id']) && array_key_exists($_GET['product_listing_sorter_id'], $sorter_list_search)){
-     $product_listing_sorter_id = (int)$_GET['product_listing_sorter_id'];
-     if ($debug_pls) $debug_pls_msg  .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id=' . $product_listing_sorter_id . '<br>';
-    for ($j = 0, $n = count($sorter_list_search); $j < $n; $j++) {
-        if ($product_listing_sorter_id === $j) {//equate the id with the drop-down list to decide the sorting clause
-            $elements_sorter_list = explode(':', $sorter_list_search[$j]);
-            $pattern_multi = str_replace(',', '', $elements_sorter_list[1]);//@TODO torvista eats commas
-            $product_listing_sorter = " ORDER BY " . $pattern_multi;
-            $debug_pls_msg  .= 'default_filter ' . __LINE__ . ': $product_listing_sorter=' . $product_listing_sorter . '<br>';
-            break;
-        }
-    }
-} else {//default setting/no selection made/first page load
-    $product_listing_sorter = '';
-    if ($debug_pls)  $debug_pls_msg  .= 'default_filter ' . __LINE__ . ': no selection, $product_listing_sorter set to \'\'<br>';
-}
-//eof PLS
 if (!isset($select_column_list)) {
   $select_column_list = '';
 }
@@ -72,7 +50,6 @@ if (isset($_GET['manufacturers_id']) && $_GET['manufacturers_id'] != '') {
     $and .= " AND m.manufacturers_id = " . (int)$_GET['filter_id'] . " ";
   }
 }
-//torvista show disabled products when admin customer logged in
 $listing_sql = "SELECT " . $select_column_list . " p.products_id, p.products_type, p.master_categories_id, p.manufacturers_id, p.products_price, p.products_tax_class_id, pd.products_description,
                        IF(s.status = 1, s.specials_new_products_price, NULL) AS specials_new_products_price,
                        IF(s.status = 1, s.specials_new_products_price, p.products_price) AS final_price,
@@ -83,17 +60,53 @@ $listing_sql = "SELECT " . $select_column_list . " p.products_id, p.products_typ
                   AND pd.language_id = " . (int)$_SESSION['languages_id'] . "
                 LEFT JOIN " . TABLE_PRODUCTS_TO_CATEGORIES . " p2c ON p2c.products_id = p.products_id
                 LEFT JOIN " . TABLE_MANUFACTURERS . " m ON m.manufacturers_id = p.manufacturers_id
-                WHERE (p.products_status = 1" . mv_show_disabled_products() . ")  
+                WHERE p.products_status = 1
                 " . $and . "
-                " . $alpha_sort . $product_listing_sorter;
-//torvista added . $product_listing_sorter; $show_disabled_products above
+                " . $alpha_sort;
+
 // set the default sort order setting from the Admin when not defined by customer
 if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
+//steve PLS 1 of 1
+$debug_pls = false;//true/false, show debugging information
+$debug_pls_msg = '';
+$pls_order_by = '';
+if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $_GET[\'sort\'] =' . $_GET['sort'] . '<br>';
+if ($debug_pls && PRODUCT_LIST_ALPHA_SORTER === 'true') $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $alpha_sort=' . $alpha_sort . '<br>';
 
-//torvista ORIGINAL if (isset($column_list)) {
-if (isset($column_list) && (!isset($_GET['product_listing_sorter_id']) || $_GET['product_listing_sorter_id']==0)) {//are some columns defined? //MOD Product Listing Sorter
+$product_listing_sorter_id = !empty($_GET['product_listing_sorter_id']) ? (int)$_GET['product_listing_sorter_id'] : '';
+if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id =' . $product_listing_sorter_id . '<br>';
+
+switch (true) { //add category-specific clauses
+    case (strpos($cPath, '3_') === 0): //in this case, everything under category 3_:  bikes
+        $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST_BIKES);//this constant is the drop-down-list text options: specific to this category branch
+        $product_listing_sorter_id = $product_listing_sorter_id === '' ? 1 : $product_listing_sorter_id;// set a default for THIS category if NO selection yet made by user
+        if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': Category root 3 specific options<br>';
+        break;
+    default:
+        $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);//this constant is the drop-down-list text options
+}
+
+if ($product_listing_sorter_id !== '' && array_key_exists($product_listing_sorter_id, $sorter_list_search)) {
+    if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id in $sorter_list_search<br>';
+
+    for ($j = 0, $n = count($sorter_list_search); $j < $n; $j++) {
+        if ($product_listing_sorter_id === $j) {//equate the id with the drop-down list to decide the sorting clause
+            $elements_sorter_list = explode(':', $sorter_list_search[$j]); //separate text and clause
+            $pattern_multi = str_replace(',', '', $elements_sorter_list[1]);//@TODO steve eats commas
+            $pls_order_by = " ORDER BY " . $pattern_multi;
+            break;
+        }
+    }
+}
+if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $pls_order_by=' . $pls_order_by . '<br>';
+
+if ($pls_order_by !== '') {
+        $listing_sql .= $pls_order_by;
+    } else {
+//eof PLS 1 of 1
+if (isset($column_list)) {
   if ((!isset($_GET['sort'])) || (isset($_GET['sort']) && !preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {
     for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
       if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
@@ -140,6 +153,9 @@ if (isset($column_list) && (!isset($_GET['product_listing_sorter_id']) || $_GET[
     }
   }
 }
+//PLS 2 of 2
+}
+//eof PLS 2 of 2
 // optional Product List Filter
 if (PRODUCT_LIST_FILTER > 0) {
   if (isset($_GET['manufacturers_id']) && $_GET['manufacturers_id'] != '') {
@@ -165,10 +181,10 @@ if (PRODUCT_LIST_FILTER > 0) {
   }
 //MOD PLS
 if (//torvista isset for php notice indefined index
-(isset($_GET['sort']) && $_GET['sort'] !=0) || $alpha_sort != 0 || $product_listing_sorter != 0) {//MOD Product Listing Sorter: to make available for product info page prev/next
+if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {//to make available for product info page prev/next
 		 $_SESSION['listing_sql'] = $listing_sql;
 }
-//eof PLS
+//eof PLS 3 of 3
   $do_filter_list = false;
   $filterlist = $db->Execute($filterlist_sql);
   if ($filterlist->RecordCount() > 1) {
