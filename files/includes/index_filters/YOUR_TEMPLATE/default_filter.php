@@ -18,8 +18,8 @@ if (!defined('IS_ADMIN_FLAG')) {
 //plugin Product Listing Sorter 1 of 1
 //custom sorting array - optional - examples
 $pls_custom_sort = [];
-$pls_custom_sort[] = ['id' => 9, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER1, 'order' => ' ORDER BY p.products_sort_order'];
-$pls_custom_sort[] = ['id' => 10, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER2, 'order' => ' ORDER BY p.products_weight'];
+//$pls_custom_sort[] = ['id' => 9, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER1, 'order' => ' ORDER BY p.products_sort_order'];
+//$pls_custom_sort[] = ['id' => 10, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER2, 'order' => ' ORDER BY p.products_weight'];
 //////////////////////////////////////////////////
 
 if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '') {
