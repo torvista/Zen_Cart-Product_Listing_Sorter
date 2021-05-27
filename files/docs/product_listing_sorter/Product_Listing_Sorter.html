@@ -2,7 +2,7 @@
 <html lang="en-GB" xml:lang="en-GB" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
-    <title>Product Listing Sorter 2.1 readme</title>
+    <title>Product Listing Sorter 2.3 readme</title>
     <style type="text/css">
 <!--
 body {
@@ -66,7 +66,7 @@ li {
   <body>
     <h1>Product Listing Sorter</h1>
     <p>License: GPL 2.0 as per included license.txt<br />
-      Version: 2.2, tested on Zen Cart v1.55f.<br />
+      Version: 2.3, tested on Zen Cart v1.57.<br />
       Support Thread: <a target="_blank" href="http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down">http://www.zen-cart.com/showthread.php?205606-Product-Listing-Sorter-Drop-Down</a><br />
     </p>
     <h2>What does this mod do?</h2>
@@ -89,47 +89,36 @@ li {
       to a new session variable for use by prev-next. </p>
     <h2>Upgrading from a previous version</h2>
     <p>You should completely uninstall/unmerge changes made by the the previous
-      1.x versions, return all files to default AND then check your site
-      functionality BEFORE installing this version.</p>
-    <p>Version 2.x onwards is
-      <strong>completely different</strong> to the 1.x versions.</p>
+      versions, return all files to default AND then check your site
+      functionality BEFORE installing this version.    </p>
     <h2>Installation</h2>
     <p>This fileset has been tested by dropping directly into a new Zen Cart
-      1.51 installation. You should test it similarly before integrating it into
-      your own site.</p>
-    <p class="warning">As always, with ANY mod or plugin - BACKUP first and DO
-      NOT INSTALL NOR TEST ON A LIVE/PRODUCTION SITE!</p>
-    <h3>1) Copy/Merge Files (suggest using Beyond Compare)</h3>
-    <p>If any files (the overrides) already exist, you will need to merge the
-      changes. If you are not sure what to do, install this on a new test shop
-      and understand it before merging with your own shop development
-      installation.</p>
+      1.57 installation, overwriting core files where unavoidable.</p>
+    <p class="warning">As always, with ANY mod or plugin -  DO
+      NOT INSTALL NOR TEST ON A LIVE/PRODUCTION SITE without testing it on a development site FIRST!</p>
+    <h3>1) Merge Files (suggest using Beyond Compare) - DO NOT BLINDLY COPY AND HOPE FOR THE BEST!</h3>
+    <p>If any files already exist/are already using overrides with other mods, you will need to <strong>merge</strong> the
+      changes. If you are not sure what to do, install this on a new ZC157 shop
+      and understand it, before merging with your own shop development
+      site.</p>
     <ol>
-      <li>\includes\extra_datafiles\product_listing_sorter_filenames.php - <strong>NEW</strong>
-        (definition of where to find the new code)</li>
-      <li>\includes\index_filters\YOUR_TEMPLATE\default_filter.php - <strong>OVERRIDE</strong>
-        (deals with the GET parameters to determine how the product listing
-        should be filtered and sorted)</li>
+      <li>\includes\extra_datafiles\product_listing_sorter_filenames.php - <strong>NEW</strong></li>
+      <li>\includes\functions\extra_functions.php - <strong>CORE FILE MODIFICATION</strong> to function zen_create_sort_heading</li>
+      <li>\includes\index_filters\YOUR_TEMPLATE\default_filter.php - <strong>OVERRIDE</strong> (Deals with the GET parameters to determine how the product listing
+      should be filtered, and now sorted)<strong><br />
+      </strong>
+        <br />
+        <em><strong>This file contains an example array, where you may add a custom sort option.</strong><br />
+        <br />
+      </em></li>
       <li>\includes\languages\english\extra_definitions\product_listing_sorter.php
-        - <strong>NEW</strong> (english constants and <strong>sorting
-          definitions</strong>)</li>
-      <li>OPTIONAL:
-        \includes\languages\spanish\extra_definitions\product_listing_sorter.php
-        - <strong>NEW</strong> (spanish constants and <strong>sorting
-          definitions</strong>)</li>
-      <li>\includes\modules\product_listing_sorter.php - <strong>NEW</strong> (generates the Product Listing Sorter drop-down code)</li>
-      <li>\includes\modules\pages\advanced_search_result\header_php.php - <span
-
-          class="warning">CORE file overwrite, merge differences</span> (creates
-        "order by" sql clause)</li>
-      <li>\includes\modules\pages\index\main_template_vars.php - <span class="warning">CORE
-          file overwrite, merge differences</span> (unset
-        $_GET['product_listing_sorter_id'] when not in use)</li>
+        - <strong>NEW</strong></li>
       <li>\includes\modules\YOUR_TEMPLATE\product_listing.php - <strong>OVERRIDE</strong>
         (added GETs to carry filter parameters to product info page) </li>
       <li>\includes\modules\YOUR_TEMPLATE\product_prev_next.php - <strong>OVERRIDE</strong>
         (picks up the filtered/sorted sql listing from a SESSION variable to
       display the same order when using prev/next) </li>
+      <li>\includes\modules\product_listing_sorter.php - <strong>NEW</strong> (generates the Product Listing Sorter drop-down html, included)</li>
       <li>\includes\templates\YOUR_TEMPLATE\templates\tpl_advanced_search_result_default.php
         - <strong>OVERRIDE</strong> (template file for the physical location of
         the Product Listing Sorter drop-down on this page.)</li>
@@ -139,16 +128,13 @@ li {
       <li>\includes\templates\YOUR_TEMPLATE\templates\tpl_products_next_previous.php
         - <strong>OVERRIDE</strong> (changed to use the filtered/sorted product
         listing when browsing and re-display the same listing when returning
-        from the product info page.)</li>
+        from the product info page to the listing.)</li>
       <li>\includes\templates\YOUR_TEMPLATE\sideboxes\tpl_categories.php - <strong>OVERRIDE</strong>
-        (changed to use new parameters and carry the chosed sort order through
-        to another category when selected from the sidebox.)</li>
-      <li>includes\application_top.php - <span class="warning">CORE file
-          overwrite, merge differences</span> (decontamination of new <span>$_GET['product_listing_sorter_id']</span>)</li>
+        (maintain the GETs/the chosen sort order when navigating from the categories sidebox.)</li>
     </ol>
-    <p>Copy/merge the files into the correct directories: the files marked with
+    <p>Merge the files into the correct directories: the files marked with
       the \YOUR_TEMPLATE path need to go into your template directories or
-      CLASSIC if you are just testing on a new installation, NOT into
+      responsive_classic if you are just testing on a new installation, but NOT into
       directories literally called "YOUR_TEMPLATE".</p>
     <h3>2) Install Admin Configuration Option</h3>
     <p>Copy the code from \docs\sql\product_listing_sorter_install.sql and paste it
@@ -156,28 +142,20 @@ li {
     <p>This will install a new option in:<br />
           Admin-&gt;Configuration-&gt;Product Listing-&gt;Include Product
       Listing Sorter Dropdown (mod)</p>
+    <p>to enable/disable the module. Or if you don't want another admin option, you can uncomment</p>
+    <pre>//define('PRODUCT_LISTING_SORTER',&#32;'true');&#32;//use&#32;instead&#32;of&#32;admin&#32;SQL</pre>
+    <p>in \includes\modules\product_listing_sorter.php.</p>
     <h2>Configuration</h2>
-    <h3>Editing the Sort options that appear in the drop-down</h3>
-    <p> 1) the text shown and the corresponding relevant sql clauses are defined
-      in</p>
-    <p>
-      \includes\languages\english\extra_definitions\product_listing_sorter_en.php</p>
-    <p class="code">define('PRODUCT_LISTING_SORTER_LIST', '<br />
-      Name (asc):pd.products_name;<br />
-      Name (desc):pd.products_name DESC;<br />
-      Model (asc):p.products_model;<br />
-      Model (desc):p.products_model DESC;<br />
-      Price (low to high):p.products_price_sorter;<br />
-      Price (high to low):p.products_price_sorter DESC;<br />
-      Manufacturer:m.manufacturers_name;<br />
-      Newest:p.products_date_added DESC;<br />
-      Most Popular: p.products_ordered DESC<br />
-      ');</p>
-    <p>The sql clauses after the  ":" are added onto the sql that produces the
-      product listing, so making a mistake here will give you a blank white
-      page.</p>
-    <p>Edit or comment out the lines as required.</p>
-    <h3>Setting a default sort order that does not reference a displayed column.</h3>
+    <h3>1) Default Sorting Options</h3>
+    <p>The options shown in the dropdown are based on the columns enabled in the Admin.</p>
+    <h3>2) Extra/Custom Sorting Options</h3>
+    <p>For columns/fields that are not set to be displayed or are not available in the Admin, you may add your custom option in</p>
+    <p>\includes\index_filters\YOUR_TEMPLATE\default_filter.php, you may define custom sorting options, eg.</p>
+    <pre>$pls_custom_sort[]&#32;=&#32;['id'&#32;=&gt;&#32;9,&#32;'text'&#32;=&gt;&#32;PLS_TEXT_CUSTOM_SORT_ORDER1,&#32;'order'&#32;=&gt;&#32;'&#32;ORDER&#32;BY&#32;p.products_sort_order'];</pre>
+    <p>This is ascending, the code will automatically add the descending option.</p>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <p>Setting a default sort order that does not reference a displayed column.</p>
     <p>The default sort order can be defined in the admin as detailed
       below...but only in terms of the columns that are displayed.<br />
       If you want to use a different criteria, for example newest first, that
@@ -242,7 +220,7 @@ li {
     <p>-----------------------------------------------------------------------------------------------</p>
     <h1>Background</h1>
     <p>I wrote this information to help my goldfish memory.</p>
-    <h2>Zen Cart 1.55x without modifications</h2>
+    <h2>Zen Cart 1.57 without modifications</h2>
     <p>In the product listing there are two optional filters available.</p>
     <p>1) The Category/Manufacturer filter</p>
     <p><img width="537" height="24" class="img" alt="Admin option: display category-manufacturer filter"
@@ -293,6 +271,7 @@ li {
       load (or is invalid/has anything other than "1-8" or "a" or "d" in it)
       then $_GET['sort'] will be set to the column of the Product Name and is
       hard-coded as ascending.</p>
+    <p>At this point the plugin code is added to allow processing of sort numbers above 8: the custom sort orders from 9 upwards.</p>
     <p>So if you've set Product Name as column 7, $_GET['sort'] will be set to
       7a.</p>
     <p>If you have switched off "Display Product Name", a hard-coded default
@@ -308,8 +287,10 @@ li {
       switch ($column_list[$sort_col-1]) {</p>
     <p>where the column to use for sorting is extracted/identified, followed by
       the a or d for the sort_order.</p>
-    <p>So that's the default setting. </p>
+    <p>&nbsp;</p>
     <h2>Version History</h2>
+    <h3>v2.3 2021-05-27 - torvista</h3>
+    <p>Major overhaul of code.</p>
     <h3>v2.2 2018-09-12 - torvista</h3>
     <p>Actually all these changes were done in 2016 but never got uploaded...sorry!<br />
       advanced_search_result.php: code edit to fix bug caused by using sorter
