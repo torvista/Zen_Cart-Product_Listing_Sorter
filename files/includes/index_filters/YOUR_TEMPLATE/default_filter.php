@@ -15,23 +15,6 @@
 if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
 }
-//plugin Product Listing Sorter 1 of 1
-//custom sorting array - optional - examples
-$pls_custom_sort = [];
-//$pls_custom_sort[] = ['id' => 9, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER1, 'order' => ' ORDER BY p.products_sort_order'];
-//$pls_custom_sort[] = ['id' => 10, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER2, 'order' => ' ORDER BY p.products_weight'];
-//////////////////////////////////////////////////
-
-if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '') {
-    if ($_GET['product_listing_sorter'] === '0') { //from dropdown "Reset"
-        $_GET['product_listing_sorter'] = ''; //set dropdown to "Choose.."
-        // set the default sort order setting from the Admin when not defined by customer
-            $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER !== '' ? PRODUCT_LISTING_DEFAULT_SORT_ORDER : '20a';
-    } else {
-        $_GET['sort'] = $_GET['product_listing_sorter'];
-    }
-}
-//eof plugin Product Listing Sorter 1 of 1
 if (isset($_GET['sort']) && strlen($_GET['sort']) > 3) {
   $_GET['sort'] = substr($_GET['sort'], 0, 3);
 }
@@ -84,37 +67,66 @@ $listing_sql = "SELECT " . $select_column_list . " p.products_id, p.products_typ
 if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
+//steve plugin Product Listing Sorter 1 of 3
+$debug_pls = false;//true/false, show debugging information
+$debug_pls_msg = '';
+$pls_order_by = '';
+if ($debug_pls) {
+    $debug_pls_msg .= 'default_filter ' . __LINE__ . ': PRODUCT_LISTING_DEFAULT_SORT_ORDER =' . PRODUCT_LISTING_DEFAULT_SORT_ORDER . '<br>';
+    $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $_GET[\'sort\'] =' . $_GET['sort'] . '<br>';
+}
+if ($debug_pls && PRODUCT_LIST_ALPHA_SORTER === 'true') $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $alpha_sort=' . $alpha_sort . '<br>';
 
+$product_listing_sorter_id = !empty($_GET['product_listing_sorter_id']) ? (int)$_GET['product_listing_sorter_id'] : '';
+if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id =' . $product_listing_sorter_id . '<br>';
+
+switch (true) { //add category-specific clauses
+    case (strncmp($cPath, '3_', 2) === 0): //in this case, everything under category 3_:  bikes
+        $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST_BIKES);//this constant is the drop-down-list text options: specific to this category branch
+        $product_listing_sorter_id = $product_listing_sorter_id === '' ? 1 : $product_listing_sorter_id;// set a default for THIS category if NO selection yet made by user
+        if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': Category root 3 specific options<br>';
+        break;
+    default:
+        $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);//this constant is the drop-down-list text options
+}
+if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ':$sorter_list_search<pre>' . print_r($sorter_list_search, true) . '</pre>';
+
+if ($product_listing_sorter_id !== '' && array_key_exists($product_listing_sorter_id, $sorter_list_search)) {
+    if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id in $sorter_list_search<br>';
+
+    for ($j = 0, $n = count($sorter_list_search); $j < $n; $j++) {
+        if ($product_listing_sorter_id === $j) {//equate the id with the drop-down list to decide the sorting clause
+            $elements_sorter_list = explode(':', $sorter_list_search[$j]); //separate text and clause
+            $pattern_multi = str_replace(',', '', $elements_sorter_list[1]);//@TODO steve eats commas
+            $pls_order_by = " ORDER BY " . $pattern_multi;
+            break;
+        }
+    }
+}
+if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $pls_order_by=' . $pls_order_by . '<br>';
+
+if ($pls_order_by !== '') {
+        $listing_sql .= $pls_order_by;
+    if (!isset($_GET['sort']) && PRODUCT_LISTING_DEFAULT_SORT_ORDER == '') {//replicating assignment in clause below: avoids php warning for not set
+        $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
+    }
+    } else {
+//eof PLS 1 of 3
 if (isset($column_list)) {
   if ((!isset($_GET['sort'])) || (isset($_GET['sort']) && !preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {
     for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
-        if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
-          $_GET['sort'] = $i + 1 . 'a';
-          $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
-          break;
-        }
-//plugin Product Listing Sorter 2 of 2
-        if (isset($pls_custom_sort) & count($pls_custom_sort) > 0) {//custom sorting array is defined
-                $sort_col = substr($_GET['sort'], 0, 1);
-                $sort_order = substr($_GET['sort'], -1);
-                foreach ($pls_custom_sort as $custom_sort) {
-                    if ($custom_sort['id'] === (int)$sort_col) {
-                        $listing_sql .= $custom_sort['order'] . ($sort_order === 'd' ? ' DESC' : '');
-                        echo __LINE__ . ':$listing_sql=' . $listing_sql . '<br>';
-                        break 2;
-                    }
-                }
-//eof plugin Product Listing Sorter 2 of 2
-            } else {
-          // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank
-          // for reverse, descending order use:
-          // $listing_sql .= " order by p.products_sort_order desc, pd.products_name";
-          $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
-          break;
-        }
-
+      if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
+        $_GET['sort'] = $i + 1 . 'a';
+        $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
+        break;
+      } else {
+        // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank
+        // for reverse, descending order use:
+        // $listing_sql .= " order by p.products_sort_order desc, pd.products_name";
+        $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
+        break;
+      }
     }
-
     // if set to nothing use products_sort_order and PRODUCTS_LIST_NAME is off
     if (PRODUCT_LISTING_DEFAULT_SORT_ORDER == '') {
       $_GET['sort'] = '20a';
@@ -145,9 +157,11 @@ if (isset($column_list)) {
         $listing_sql .= " ORDER BY p.products_price_sorter " . ($sort_order == 'd' ? 'DESC' : '') . ", pd.products_name";
         break;
     }
-
   }
 }
+//PLS 2 of 3
+}
+//eof PLS 2 of 3
 // optional Product List Filter
 if (PRODUCT_LIST_FILTER > 0) {
   if (isset($_GET['manufacturers_id']) && $_GET['manufacturers_id'] != '') {
@@ -171,11 +185,11 @@ if (PRODUCT_LIST_FILTER > 0) {
                        GROUP BY m.manufacturers_id, m.manufacturers_name
                        ORDER BY m.manufacturers_name";
   }
-//plugin Product Listing Sorter 2 of 2: set session sql to make available for product info page prev/next
-if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {
+//PLS 3 of 3 for php notice undefined index
+if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {//to make available for product info page prev/next
 		 $_SESSION['listing_sql'] = $listing_sql;
 }
-//eof plugin Product Listing Sorter 2 of 2
+//eof PLS 3 of 3
   $do_filter_list = false;
   $filterlist = $db->Execute($filterlist_sql);
   if ($filterlist->RecordCount() > 1) {

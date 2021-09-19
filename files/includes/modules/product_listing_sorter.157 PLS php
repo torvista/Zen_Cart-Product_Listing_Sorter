@@ -77,7 +77,7 @@ if (PRODUCT_LISTING_SORTER === 'true') {
             $product_listing_sorter_options[] = ['id' => $custom_sort['id'] . 'd', 'text' => $custom_sort['text'] . ' ' . TEXT_DESC];
         }
     }
-//eof plugin Product Lisnitg Sorter 1 of 1 ?>
+//eof plugin Product Listing Sorter 1 of 1 ?>
     <label for="productListingSorter" class="inputLabel"
            style="float:none"><?php //css class "inputLabel" floats this text and box below the other filter boxes in rc template unless it is set to :none inline like this;
         echo TEXT_INFO_SORT_BY; ?></label>

@@ -1,7 +1,7 @@
 # Zen Cart - Product Listing Sorter
-Tested with Zen Cart 1.57.
+Branch 158 is a WORK IN PROGRESS for Zen Cart 1.58. DO NOT USE.
 
-Version 2.3
+Version 2.4
 
 This plugin adds a new sorting drop-down to the existing filters for the product listings, product info page, prev/next navigation and the advanced search results page.
-See the readme in /files/docs/ for more details.
+See the readme in /docs/ for more details.
