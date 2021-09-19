@@ -98,12 +98,11 @@ li {
       NOT INSTALL NOR TEST ON A LIVE/PRODUCTION SITE without testing it on a development site FIRST!</p>
     <h3>1) Merge Files (suggest using Beyond Compare) - DO NOT BLINDLY COPY AND HOPE FOR THE BEST!</h3>
     <p>If any files already exist/are already using overrides with other mods, you will need to <strong>merge</strong> the
-      changes. If you are not sure what to do, install this on a new ZC157 shop
-      and understand it, before merging with your own shop development
-      site.</p>
+      changes. If you are not sure what to do, install this on a new ZC157 fileset to understand the changes, before merging with your own shop <strong>development</strong> site.</p>
+    <p> Where changes are applied to core files, I have included the core file too for easy comparison, named as whatever.157 php. I use this method on my site to highlight where a core file has been modified.</p>
     <ol>
       <li>\includes\extra_datafiles\product_listing_sorter_filenames.php - <strong>NEW</strong></li>
-      <li>\includes\functions\extra_functions.php - <strong>CORE FILE MODIFICATION</strong> to function zen_create_sort_heading</li>
+      <li>\includes\functions\functions_general.php - <strong>CORE FILE MODIFICATION</strong> to function zen_create_sort_heading</li>
       <li>\includes\index_filters\YOUR_TEMPLATE\default_filter.php - <strong>OVERRIDE</strong> (Deals with the GET parameters to determine how the product listing
       should be filtered, and now sorted)<strong><br />
       </strong>
@@ -153,8 +152,6 @@ li {
     <p>\includes\index_filters\YOUR_TEMPLATE\default_filter.php, you may define custom sorting options, eg.</p>
     <pre>$pls_custom_sort[]&#32;=&#32;['id'&#32;=&gt;&#32;9,&#32;'text'&#32;=&gt;&#32;PLS_TEXT_CUSTOM_SORT_ORDER1,&#32;'order'&#32;=&gt;&#32;'&#32;ORDER&#32;BY&#32;p.products_sort_order'];</pre>
     <p>This is ascending, the code will automatically add the descending option.</p>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
     <p>Setting a default sort order that does not reference a displayed column.</p>
     <p>The default sort order can be defined in the admin as detailed
       below...but only in terms of the columns that are displayed.<br />
