@@ -1,4 +1,4 @@
-<?php //Plugin Product Listing Sorter: based on ZC157
+<?php //Plugin Product Listing Sorter: based on ZC157 Responsive Classic
 /**
  * Page Template
  *

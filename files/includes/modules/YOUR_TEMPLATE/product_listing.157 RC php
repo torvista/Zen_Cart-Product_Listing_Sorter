@@ -1,4 +1,4 @@
-<?php //plugin Product Listing Sorter: add parameter. Based on ZC157 Responsive Classic.
+<?php
 /**
  * product_listing module
  *
@@ -141,15 +141,9 @@ if ($num_products_count > 0) {
         case 'PRODUCT_LIST_NAME':
         $lc_align = '';
         if ($product_listing_layout_style == 'columns') $lc_align = 'center';
-//plugin Product Listing Sorter 1 of 1:
-/*     $lc_text = '<h3 class="itemTitle">
+        $lc_text = '<h3 class="itemTitle">
             <a href="' . zen_href_link(zen_get_info_page($listing->fields['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $listing->fields['products_id']) . '">' . $listing->fields['products_name'] . '</a>
             </h3>';
-*/
-        $lc_text = '<h3 class="itemTitle">
-            <a href="' . zen_href_link(zen_get_info_page($listing->fields['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $listing->fields['products_id'] .  '&' . zen_get_all_get_params(['cPath', 'products_id', 'product_listing_sorter'])) . '">' . $listing->fields['products_name'] . '</a>
-            </h3>';
-// eof Plugin Product Listing Sorter 1 of 1
         if ((int)PRODUCT_LIST_DESCRIPTION > 0) {
             $lc_text .= '
             <div class="listingDescription">' . zen_trunc_string(zen_clean_html(stripslashes(zen_get_products_description($listing->fields['products_id'], $_SESSION['languages_id']))), PRODUCT_LIST_DESCRIPTION) . '</div>';
