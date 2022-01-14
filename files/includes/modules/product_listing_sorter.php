@@ -4,8 +4,6 @@
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
  */
 
-//define('PRODUCT_LISTING_SORTER', 'true'); //optionally use instead of admin SQL
-
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
 }

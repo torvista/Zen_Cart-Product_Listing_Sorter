@@ -99,7 +99,7 @@ li {
     <h3>1) Merge Files (suggest using Beyond Compare) - DO NOT BLINDLY COPY AND HOPE FOR THE BEST!</h3>
     <p>If any files already exist/are already using overrides with other mods, you will need to <strong>merge</strong> the
       changes. If you are not sure what to do, install this on a new ZC157 fileset to understand the changes, before merging with your own shop <strong>development</strong> site.</p>
-    <p> Where changes are applied to core files, I have included the core file too for easy comparison, named as whatever.157 php. I use this method on my site to highlight where a core file has been modified.</p>
+    <p> Where changes are applied to core files, I have included the core file too, for easy comparison, named as whatever.157 php. I use this method on my site to highlight where a core file has been modified and to provide an easy comparison to the original file.</p>
     <ol>
       <li>\includes\extra_datafiles\product_listing_sorter_filenames.php - <strong>NEW</strong></li>
       <li>\includes\functions\functions_general.php - <strong>CORE FILE MODIFICATION</strong> to function zen_create_sort_heading</li>
@@ -141,9 +141,7 @@ li {
     <p>This will install a new option in:<br />
           Admin-&gt;Configuration-&gt;Product Listing-&gt;Include Product
       Listing Sorter Dropdown (mod)</p>
-    <p>to enable/disable the module. Or if you don't want another admin option, you can uncomment</p>
-    <pre>//define('PRODUCT_LISTING_SORTER',&#32;'true');&#32;//use&#32;instead&#32;of&#32;admin&#32;SQL</pre>
-    <p>in \includes\modules\product_listing_sorter.php.</p>
+    <p>to enable/disable the module.    </p>
     <h2>Configuration</h2>
     <h3>1) Default Sorting Options</h3>
     <p>The options shown in the dropdown are based on the columns enabled in the Admin.</p>
