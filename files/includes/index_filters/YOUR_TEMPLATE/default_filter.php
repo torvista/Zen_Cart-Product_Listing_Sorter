@@ -67,7 +67,7 @@ $listing_sql = "SELECT " . $select_column_list . " p.products_id, p.products_typ
 if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
-//steve plugin Product Listing Sorter 1 of 3
+// plugin Product Listing Sorter PLS 1 of 3
 $debug_pls = false;//true/false, show debugging information
 $debug_pls_msg = '';
 $pls_order_by = '';

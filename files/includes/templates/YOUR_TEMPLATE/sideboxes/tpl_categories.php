@@ -1,4 +1,4 @@
-<?php //plugin Product Listing Sorter: based on Zc157 responsive_classic
+<?php //plugin Product Listing Sorter: based on ZC158 responsive_classic
 /**
  * Side Box Template
  *
