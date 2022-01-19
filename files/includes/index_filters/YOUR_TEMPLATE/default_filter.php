@@ -179,7 +179,7 @@ if (PRODUCT_LIST_FILTER > 0) {
   }
 //plugin Product Listing Sorter 3 of 3
 //if a sort is set, OR an alpha sort is set, OR PLS is set: make session listing_sql available for product info page prev/next
-if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {
+if ( (isset($_GET['sort']) && $_GET['sort'] !== '0') || $alpha_sort !== '' || (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '0') ) {
 		 $_SESSION['listing_sql'] = $listing_sql;
 }
 //eof plugin Product Listing Sorter 3 of 3
