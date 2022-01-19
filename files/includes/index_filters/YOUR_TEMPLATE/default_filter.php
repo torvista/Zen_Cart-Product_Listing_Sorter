@@ -94,7 +94,7 @@ if (isset($column_list)) {
           break;
         }
 //plugin Product Listing Sorter 2 of 2
-        if (isset($pls_custom_sort) & count($pls_custom_sort) > 0) {//custom sorting array is defined
+        if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is defined
                 $sort_col = substr($_GET['sort'], 0, 1);
                 $sort_order = substr($_GET['sort'], -1);
                 foreach ($pls_custom_sort as $custom_sort) {
