@@ -15,7 +15,7 @@
 if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
 }
-//plugin Product Listing Sorter 1 of 1
+//plugin Product Listing Sorter 1 of 3
 //custom sorting array - optional - examples
 $pls_custom_sort = [];
 //$pls_custom_sort[] = ['id' => 9, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER1, 'order' => ' ORDER BY p.products_sort_order'];
@@ -31,7 +31,7 @@ if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !=
         $_GET['sort'] = $_GET['product_listing_sorter'];
     }
 }
-//eof plugin Product Listing Sorter 1 of 1
+//eof plugin Product Listing Sorter 1 of 3
 if (isset($_GET['sort']) && strlen($_GET['sort']) > 3) {
   $_GET['sort'] = substr($_GET['sort'], 0, 3);
 }
@@ -93,7 +93,7 @@ if (isset($column_list)) {
         $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
         break;
         }
-//plugin Product Listing Sorter 2 of 2
+//plugin Product Listing Sorter 2 of 3
         if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is defined
                 $sort_col = substr($_GET['sort'], 0, 1);
                 $sort_order = substr($_GET['sort'], -1);
@@ -103,7 +103,7 @@ if (isset($column_list)) {
                         break 2;
                     }
                 }
-//eof plugin Product Listing Sorter 2 of 2
+//eof plugin Product Listing Sorter 2 of 3
       } else {
         // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank
         // for reverse, descending order use:
@@ -167,11 +167,11 @@ if (PRODUCT_LIST_FILTER > 0) {
                        GROUP BY m.manufacturers_id, m.manufacturers_name
                        ORDER BY m.manufacturers_name";
   }
-//plugin Product Listing Sorter 2 of 2: set session sql to make available for product info page prev/next
+//plugin Product Listing Sorter 3 of 3: set session listing_sql to make available for product info page prev/next
 if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {
 		 $_SESSION['listing_sql'] = $listing_sql;
 }
-//eof plugin Product Listing Sorter 2 of 2
+//eof plugin Product Listing Sorter 3 of 3
   $do_filter_list = false;
   $filterlist = $db->Execute($filterlist_sql);
   if ($filterlist->RecordCount() > 1) {
