@@ -88,10 +88,10 @@ if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
 if (isset($column_list)) {
   if ((!isset($_GET['sort'])) || (isset($_GET['sort']) && !preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {
     for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
-        if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
-          $_GET['sort'] = $i + 1 . 'a';
-          $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
-          break;
+      if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
+        $_GET['sort'] = $i + 1 . 'a';
+        $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
+        break;
         }
 //plugin Product Listing Sorter 2 of 2
         if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is defined
@@ -104,16 +104,14 @@ if (isset($column_list)) {
                     }
                 }
 //eof plugin Product Listing Sorter 2 of 2
-            } else {
-          // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank
-          // for reverse, descending order use:
-          // $listing_sql .= " order by p.products_sort_order desc, pd.products_name";
-          $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
-          break;
-        }
-
+      } else {
+        // sort by products_sort_order when PRODUCT_LISTING_DEFAULT_SORT_ORDER is left blank
+        // for reverse, descending order use:
+        // $listing_sql .= " order by p.products_sort_order desc, pd.products_name";
+        $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
+        break;
+      }
     }
-
     // if set to nothing use products_sort_order and PRODUCTS_LIST_NAME is off
     if (PRODUCT_LISTING_DEFAULT_SORT_ORDER == '') {
       $_GET['sort'] = '20a';
@@ -144,7 +142,6 @@ if (isset($column_list)) {
         $listing_sql .= " ORDER BY p.products_price_sorter " . ($sort_order == 'd' ? 'DESC' : '') . ", pd.products_name";
         break;
     }
-
   }
 }
 // optional Product List Filter
