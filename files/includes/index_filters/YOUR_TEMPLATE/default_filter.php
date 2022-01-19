@@ -22,7 +22,9 @@ $pls_custom_sort = [];
 //$pls_custom_sort[] = ['id' => 9, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER1, 'order' => ' ORDER BY p.products_sort_order'];
 //$pls_custom_sort[] = ['id' => 10, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER2, 'order' => ' ORDER BY p.products_weight'];
 //////////////////////////////////////////////////
-
+if ($pls_debug) {
+    echo '<mark>' . __LINE__ . ': PRODUCT_LISTING_DEFAULT_SORT_ORDER=' . PRODUCT_LISTING_DEFAULT_SORT_ORDER . '<br>';
+}
 if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '') {
     if ($pls_debug) {
         echo '<mark>' . __LINE__ . ': $_GET[\'product_listing_sorter\']=' . $_GET['product_listing_sorter'] . '<br>';
@@ -104,6 +106,11 @@ if (isset($column_list)) {
         }
 //plugin Product Listing Sorter 2 of 3
         //note the above vanilla clause is used to check for $_GET['sort'] not being set or containing invalid values: in which case it gets set with a valid value.
+        if ($pls_debug) {
+            echo  __LINE__ . ': $column_list <pre>';
+            print_r($column_list);
+            echo '</pre>';
+        }
         if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is in use
                 $sort_col = substr($_GET['sort'], 0, 1);
                 $sort_order = substr($_GET['sort'], -1);
@@ -181,6 +188,11 @@ if (PRODUCT_LIST_FILTER > 0) {
 //if a sort is set, OR an alpha sort is set, OR PLS is set: make session listing_sql available for product info page prev/next
 if ( (isset($_GET['sort']) && $_GET['sort'] !== '0') || $alpha_sort !== '' || (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '0') ) {
 		 $_SESSION['listing_sql'] = $listing_sql;
+    if ($pls_debug) {
+        echo '<mark>' . __LINE__ . ': $_GET[\'product_listing_sorter\']=' . ($_GET['product_listing_sorter'] ?? 'NOT SET') . '<br>';
+        echo '<mark>' . __LINE__ . ': $_GET[\'sort\']=' . $_GET['sort'] . '<br>';
+        echo '<mark>' . __LINE__ . ': $_SESSION[\'listing_sql\']=' . $_SESSION['listing_sql'] . '<br>';
+    }
 }
 //eof plugin Product Listing Sorter 3 of 3
   $do_filter_list = false;
