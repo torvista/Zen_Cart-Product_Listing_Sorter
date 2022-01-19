@@ -100,7 +100,6 @@ if (isset($column_list)) {
                 foreach ($pls_custom_sort as $custom_sort) {
                     if ($custom_sort['id'] === (int)$sort_col) {
                         $listing_sql .= $custom_sort['order'] . ($sort_order === 'd' ? ' DESC' : '');
-                        echo __LINE__ . ':$listing_sql=' . $listing_sql . '<br>';
                         break 2;
                     }
                 }
