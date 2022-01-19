@@ -11,7 +11,7 @@ if (!defined('IS_ADMIN_FLAG')) {
 // build sorter dropdown
 if (PRODUCT_LISTING_SORTER === 'true') {
 
-    if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] === '') {
+    if (!isset($_GET['product_listing_sorter']) || $_GET['product_listing_sorter'] === '') {
         $id = '';
         $text = TEXT_PRODUCT_LISTING_SORTER_CHOOSE;
     } else {
