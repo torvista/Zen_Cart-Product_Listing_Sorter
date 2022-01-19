@@ -111,7 +111,7 @@ if (isset($column_list)) {
             print_r($column_list);
             echo '</pre>';
         }
-        if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is in use
+        if (isset($pls_custom_sort, $_GET['sort']) && count($pls_custom_sort) > 0) {//custom sorting array is in use
                 $sort_col = substr($_GET['sort'], 0, 1);
                 $sort_order = substr($_GET['sort'], -1);
                 foreach ($pls_custom_sort as $custom_sort) {
