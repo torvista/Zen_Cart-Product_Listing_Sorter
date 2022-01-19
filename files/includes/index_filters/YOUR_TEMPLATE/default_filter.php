@@ -24,9 +24,9 @@ $pls_custom_sort = [];
 
 if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '') {
     if ($_GET['product_listing_sorter'] === '0') { //from dropdown "Reset"
-        $_GET['product_listing_sorter'] = ''; //set dropdown to "Choose.."
-        // set the default sort order setting from the Admin when not defined by customer
-            $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER !== '' ? PRODUCT_LISTING_DEFAULT_SORT_ORDER : '20a';
+        $_GET['product_listing_sorter'] = ''; //sets dropdown to "Choose.."
+        // set the default sort order from the Admin constant if not defined by customer
+        $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER !== '' ? PRODUCT_LISTING_DEFAULT_SORT_ORDER : '20a';
     } else {
         $_GET['sort'] = $_GET['product_listing_sorter'];
     }
@@ -94,7 +94,8 @@ if (isset($column_list)) {
         break;
         }
 //plugin Product Listing Sorter 2 of 3
-        if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is defined
+        //note the above vanilla clause is used to check for $_GET['sort'] not being set or containing invalid values: in which case it gets set with a valid value.
+        if (isset($pls_custom_sort) && count($pls_custom_sort) > 0) {//custom sorting array is in use
                 $sort_col = substr($_GET['sort'], 0, 1);
                 $sort_order = substr($_GET['sort'], -1);
                 foreach ($pls_custom_sort as $custom_sort) {
@@ -167,7 +168,8 @@ if (PRODUCT_LIST_FILTER > 0) {
                        GROUP BY m.manufacturers_id, m.manufacturers_name
                        ORDER BY m.manufacturers_name";
   }
-//plugin Product Listing Sorter 3 of 3: set session listing_sql to make available for product info page prev/next
+//plugin Product Listing Sorter 3 of 3
+//if a sort is set, OR an alpha sort is set, OR PLS is set: make session listing_sql available for product info page prev/next
 if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {
 		 $_SESSION['listing_sql'] = $listing_sql;
 }
