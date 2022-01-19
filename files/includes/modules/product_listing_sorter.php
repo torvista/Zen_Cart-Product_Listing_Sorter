@@ -1,6 +1,7 @@
 <?php //plugin Product Listing Sorter, loosely based on adjacent file product_listing_alpha_sorter
+//declare(strict_types=1); //plugin Product Listing Sorter: debugging
 /**
- * @var $column_list     //phpStorm declaration
+ * @var $column_list //phpStorm declaration
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
  */
 
@@ -67,7 +68,7 @@ if (PRODUCT_LISTING_SORTER === 'true') {
                 $product_listing_sorter_options[] = ['id' => $sort_col . 'd', 'text' => TEXT_PRICE . ' ' . TEXT_DESC];
         }
     } ?>
-<?php //plugin Product Listing Sorter 1 of 1
+    <?php //plugin Product Listing Sorter 1 of 1
     if (isset($pls_custom_sort) && is_array($pls_custom_sort)) {
         foreach ($pls_custom_sort as $custom_sort) {
             //$sort_col = (int)$custom_sort[0];
@@ -75,10 +76,10 @@ if (PRODUCT_LISTING_SORTER === 'true') {
             $product_listing_sorter_options[] = ['id' => $custom_sort['id'] . 'd', 'text' => $custom_sort['text'] . ' ' . TEXT_DESC];
         }
     }
-//eof plugin Product Lisnitg Sorter 1 of 1 ?>
+//eof plugin Product Listing Sorter 1 of 1 ?>
     <label for="productListingSorter" class="inputLabel"
            style="float:none"><?php //css class "inputLabel" floats this text and box below the other filter boxes in rc template unless it is set to :none inline like this;
         echo TEXT_INFO_SORT_BY; ?></label>
-    <?php echo zen_draw_pull_down_menu('product_listing_sorter', $product_listing_sorter_options, (isset($_GET['product_listing_sorter']) ? $_GET['product_listing_sorter'] : $_GET['sort']),
+    <?php echo zen_draw_pull_down_menu('product_listing_sorter', $product_listing_sorter_options, ($_GET['product_listing_sorter'] ?? $_GET['sort']),
         'id="productListingSorter" onchange="this.form.submit()"');
 }
