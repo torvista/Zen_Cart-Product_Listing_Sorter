@@ -1,5 +1,5 @@
 <?php //plugin Product Listing Sorter: add override of $_GET['sort'] from pls dropdown
-
+//declare(strict_types=1); //plugin Product Listing Sorter: debugging
 /**
  * default_filter.php  for index filters
  *
@@ -16,6 +16,7 @@ if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
 }
 //plugin Product Listing Sorter 1 of 3
+$pls_debug = false; //boolean: true for debug output
 //custom sorting array - optional - examples
 $pls_custom_sort = [];
 //$pls_custom_sort[] = ['id' => 9, 'text' => PLS_TEXT_CUSTOM_SORT_ORDER1, 'order' => ' ORDER BY p.products_sort_order'];
@@ -23,6 +24,9 @@ $pls_custom_sort = [];
 //////////////////////////////////////////////////
 
 if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !== '') {
+    if ($pls_debug) {
+        echo '<mark>' . __LINE__ . ': $_GET[\'product_listing_sorter\']=' . $_GET['product_listing_sorter'] . '<br>';
+    }
     if ($_GET['product_listing_sorter'] === '0') { //from dropdown "Reset"
         $_GET['product_listing_sorter'] = ''; //sets dropdown to "Choose.."
         // set the default sort order from the Admin constant if not defined by customer
@@ -30,6 +34,11 @@ if (isset($_GET['product_listing_sorter']) && $_GET['product_listing_sorter'] !=
     } else {
         $_GET['sort'] = $_GET['product_listing_sorter'];
     }
+} elseif ($pls_debug) {
+    echo '<mark>' . __LINE__ . ': <mark>$_GET[\'product_listing_sorter\']=NOT SET</mark><br>';
+}
+if ($pls_debug) {
+    echo '<mark>' . __LINE__ . ': <mark>$_GET[\'sort\']=' . ($_GET['sort'] ?? 'NOT SET') . '</mark><br>';
 }
 //eof plugin Product Listing Sorter 1 of 3
 if (isset($_GET['sort']) && strlen($_GET['sort']) > 3) {
