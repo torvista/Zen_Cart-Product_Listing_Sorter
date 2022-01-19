@@ -48,7 +48,7 @@ if (PRODUCT_LIST_CATEGORIES_IMAGE_STATUS == 'true') {
 
 //plugin Product Listing Sorter 1 of 2
 //if ($do_filter_list || isset($_GET['alpha_filter_id']) || ($check_for_alpha->RecordCount() > 0 && PRODUCT_LIST_ALPHA_SORTER == 'true')) {
-if ($do_filter_list || isset($_GET['alpha_filter_id']) || ($check_for_alpha->RecordCount() > 0 && PRODUCT_LIST_ALPHA_SORTER == 'true' && PRODUCT_LISTING_SORTER === 'true')) {
+if ($do_filter_list || isset($_GET['alpha_filter_id']) || ($check_for_alpha->RecordCount() > 0 && PRODUCT_LIST_ALPHA_SORTER === 'true') || PRODUCT_LISTING_SORTER === 'true') {
 //eof plugin Product Listing Sorter 1 of 2
   $form = zen_draw_form('filter', zen_href_link(FILENAME_DEFAULT), 'get') . '<label class="inputLabel">' .TEXT_SHOW . '</label>';
 ?>
