@@ -5,10 +5,10 @@
  * Loaded automatically by index.php?main_page=search_result.
  * Displays results of search
  *
- * @copyright Copyright 2003-2020 Zen Cart Development Team
+ * @copyright Copyright 2003-2022 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: DrByte 2020 Dec 30  Modified in v1.5.8 $
+ * @version $Id: DrByte 2020 Dec 25 New in v1.5.8-alpha $
  */
 ?>
 <div class="centerColumn" id="searchResultsDefault">
@@ -17,10 +17,10 @@
 
 <?php
 //plugin Product Listing Sorter 1 of 2
- //if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true') {
+//if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true') {
 if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true' || PRODUCT_LISTING_SORTER === 'true') {  
 //eof plugin Product Listing Sorter 1 of 2
-$form = zen_draw_form('filter', zen_href_link(FILENAME_SEARCH_RESULT), 'get');
+  $form = zen_draw_form('filter', zen_href_link(FILENAME_SEARCH_RESULT), 'get');
     //$form .= '<label class="inputLabel">' .TEXT_SHOW . '</label>';
 ?>
 <?php echo $form; ?>

@@ -2,10 +2,10 @@
 /**
  * product_listing module for v1.5.7/1.5.8
  *
- * @copyright Copyright 2003-2020 Zen Cart Development Team
+ * @copyright Copyright 2003-2022 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: DrByte 2021 Jan 15  Modified in v1.5.8 $
+ * @version $Id: torvista 2022 Aug 03 Modified in v1.5.8-alpha2 $
  */
 if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -208,7 +208,7 @@ if ($num_products_count > 0) {
             $lc_align = '';
             $lc_text = '';
 //plugin PLS 1 of 1
-            //$href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id']);
+          //$href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id']);
             $href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id'] .  '&' . zen_get_all_get_params(['cPath', 'products_id', 'product_listing_sorter']));
 //eof PLS
             $listing_product_name = (isset($record['products_name'])) ? $record['products_name'] : '';
@@ -223,7 +223,7 @@ if ($num_products_count > 0) {
             $listing_weight = (isset($record['products_weight'])) ? $record['products_weight'] : 0;
             $listing_mfg_link = zen_href_link(FILENAME_DEFAULT, 'manufacturers_id=' . (int)$record['manufacturers_id']);
             $listing_price = zen_get_products_display_price($record['products_id']);
-            $more_info_button = '<a class="moreinfoLink list-more" href="' . $href . '">' . MORE_INFO_TEXT . '</a>';
+            $more_info_button = '<a class="moreinfoLink list-more" href="' . $href . '" title="' . $record['products_id'] . '">' . MORE_INFO_TEXT . '</a>';
             $buy_now_link = zen_href_link($_GET['main_page'], zen_get_all_get_params(array('action')) . 'action=buy_now&products_id=' . $record['products_id']);
             $buy_now_button = '<a class="" href="' . $buy_now_link . '">' . zen_image_button(BUTTON_IMAGE_BUY_NOW, BUTTON_BUY_NOW_ALT, 'class="listingBuyNowButton"') . '</a>';
             $listing_qty_input_form = zen_draw_form('cart_quantity', zen_href_link($_GET['main_page'], zen_get_all_get_params(array('action')) . 'action=add_product&products_id=' . $record['products_id']), 'post', 'enctype="multipart/form-data"')
