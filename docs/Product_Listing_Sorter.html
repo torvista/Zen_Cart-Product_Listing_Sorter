@@ -98,15 +98,18 @@ body, td, th {
       your own site.</p>
 <p class="warning">As always, with ANY mod or plugin -  DO
       NOT INSTALL NOR TEST ON A LIVE/PRODUCTION SITE without thoroughly testing it on a development server FIRST! You have been warned!</p>
-<h3>1) Copy/Merge Files (suggest using Beyond Compare)</h3>
+<h3>Copy/Merge Files (suggest using Beyond Compare)</h3>
 <p>If any files (the overrides) already exist, you will need to merge the
       changes. If you are not sure what to do, install this on a vanilla Zen Cart
       and understand it before merging with your own shop development
       installation.</p>
 	  <p> Where changes are applied to core files, I have included the core file too for easy comparison, named as whatever.158 php. I use this method on my site to highlight where a core file has been modified and easily compare the changes in situ.</p>
 <ol>
+      <li>\includes\auto_loaders\product_listing_sorter.php - (for admin configuration option) <strong>NEW</strong></li>
       <li>\includes\extra_datafiles\product_listing_sorter_filenames.php - <strong>NEW</strong></li>
-      <li>CHECK THIS \includes\functions\functions_general.php - <strong>CORE FILE MODIFICATION</strong> to function zen_create_sort_heading</li>
+      <li>\includes\init_includes\product_listing_sorter.php - (for admin configuration option)  <strong>NEW</strong></li>
+      <li><span class="todo">TODO CHECK THIS</span><br>
+      \includes\functions\functions_general.php - <strong>CORE FILE MODIFICATION</strong> to function zen_create_sort_heading</li>
       <li>\includes\index_filters\YOUR_TEMPLATE\default_filter.php - <strong>OVERRIDE</strong> (deals with the GET parameters to determine how the product listing
     should be filtered and sorted)<strong><br>
       </strong>
@@ -139,15 +142,11 @@ body, td, th {
       the \YOUR_TEMPLATE path need to go into your template directories or
       responsive_classic if you are just testing on a new installation, NOT into
       directories literally called "YOUR_TEMPLATE".</p>
-<h3>2) Install Admin Configuration Option</h3>
-<p>Copy the code from \docs\sql\product_listing_sorter_install.sql and paste it
-      into Admin-&gt;Install SQL Patches and Send.</p>
-<p>This will install a new option in:<br>
-      Admin-&gt;Configuration-&gt;Product Listing-&gt;Include Product
-      Listing Sorter Dropdown (mod)</p>
-    <p>to enable/disable the module. Or if you don't want another admin option, you can uncomment</p>
-    <pre>//define('PRODUCT_LISTING_SORTER',&#32;'true');&#32;//use&#32;instead&#32;of&#32;admin&#32;SQL</pre>
-    <p>in \includes\modules\product_listing_sorter.php.</p>
+<p>&nbsp;</p>
+<p>When you refresh the Shopfront page, a new admin option will be installed in </p>
+<p>Admin-&gt;Configuration-&gt;Product Listing-&gt;Include Product
+  Listing Sorter Dropdown (mod)</p>
+    <p>to enable the module.    </p>
     <h2>Configuration</h2>
     <h3>1) Default Sorting Options</h3>
     <p>The options shown in the dropdown are based on the columns enabled in the Admin.</p>
