@@ -1,4 +1,11 @@
-<?php //plugin Product Listing Sorter: based on ZC158 template_default
+<?php
+
+declare(strict_types=1);
+/** Plugin Product Listing Sorter
+ * https://github.com/torvista/Zen_Cart-Product_Listing_Sorter
+ * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @torvista 25/11/2022
+ */
 /**
  * Page Template
  *
@@ -16,9 +23,9 @@
 <h1 id="searchResultsDefaultHeading"><?php echo HEADING_TITLE; ?></h1>
 
 <?php
-//plugin Product Listing Sorter 1 of 2
+// plugin Product Listing Sorter 1 of 2
 //if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true') {
-if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true' || PRODUCT_LISTING_SORTER === 'true') {  
+if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true' || (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true')) {
 //eof plugin Product Listing Sorter 1 of 2
   $form = zen_draw_form('filter', zen_href_link(FILENAME_SEARCH_RESULT), 'get');
     //$form .= '<label class="inputLabel">' .TEXT_SHOW . '</label>';
@@ -29,11 +36,11 @@ if ($do_filter_list || PRODUCT_LIST_ALPHA_SORTER == 'true' || PRODUCT_LISTING_SO
   echo zen_post_all_get_params('currency');
 
   require(DIR_WS_MODULES . zen_get_module_directory(FILENAME_PRODUCT_LISTING_ALPHA_SORTER));
-//plugin Product Listing Sorter 2 of 2
-  if (PRODUCT_LISTING_SORTER === 'true') {
-      include(DIR_WS_MODULES . zen_get_module_directory(FILENAME_PRODUCT_LISTING_SORTER));
+// plugin Product Listing Sorter 2 of 2
+  if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
+     include(DIR_WS_MODULES . zen_get_module_directory(FILENAME_PRODUCT_LISTING_SORTER));
   }
-//eof plugin Product Listing Sorter 2 of 2
+// eof plugin Product Listing Sorter 2 of 2
 ?>
 </form>
 <?php

@@ -1,4 +1,11 @@
-<?php //plugin Product Listing Sorter
+<?php
+
+declare(strict_types=1);
+/** Plugin Product Listing Sorter
+ * https://github.com/torvista/Zen_Cart-Product_Listing_Sorter
+ * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @torvista 25/11/2022
+ */
 /**
  * product_listing module for v1.5.7/1.5.8
  *
@@ -207,10 +214,15 @@ if ($num_products_count > 0) {
         for ($col = 0, $n = count($column_list); $col < $n; $col++) {
             $lc_align = '';
             $lc_text = '';
-//plugin PLS 1 of 1
-          //$href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id']);
-            $href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id'] .  '&' . zen_get_all_get_params(['cPath', 'products_id', 'product_listing_sorter']));
-//eof PLS
+// plugin Product Listing Sorter 1 of 1
+// add parameters to product info page so product listing sort order (sort and pls_sort) is preserved when returning to product listing
+if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
+            $href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id'] .  '&' . zen_get_all_get_params(['cPath', 'products_id']));
+} else {
+    //original
+            $href = zen_href_link(zen_get_info_page($record['products_id']), 'cPath=' . zen_get_generated_category_path_rev($linkCpath) . '&products_id=' . $record['products_id']);
+}
+// eof plugin Product Listing Sorter 1 of 1
             $listing_product_name = (isset($record['products_name'])) ? $record['products_name'] : '';
             $listing_description = '';
             if ((int)PRODUCT_LIST_DESCRIPTION > 0) {

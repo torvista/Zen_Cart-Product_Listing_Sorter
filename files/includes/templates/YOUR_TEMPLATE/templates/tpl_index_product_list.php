@@ -1,4 +1,11 @@
-<?php //plugin Product Listing Sorter: based on ZC158 responsive_classic
+<?php
+
+declare(strict_types=1);
+/** Plugin Product Listing Sorter
+ * https://github.com/torvista/Zen_Cart-Product_Listing_Sorter
+ * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @torvista 25/11/2022
+ */
 /**
  * Page Template
  *
@@ -45,10 +52,11 @@ if (PRODUCT_LIST_CATEGORIES_IMAGE_STATUS == 'true') {
   $check_for_alpha = $listing_sql;
   $check_for_alpha = $db->Execute($check_for_alpha);
 
-//plugin Product Listing Sorter 1 of 2
+// plugin Product Listing Sorter 1 of 2
+//add PLS to ensure form is used
 //if ($do_filter_list || isset($_GET['alpha_filter_id']) || ($check_for_alpha->RecordCount() > 0 && PRODUCT_LIST_ALPHA_SORTER == 'true')) {
-  if ($do_filter_list || isset($_GET['alpha_filter_id']) || ($check_for_alpha->RecordCount() > 0 && PRODUCT_LIST_ALPHA_SORTER == 'true' && PRODUCT_LISTING_SORTER === 'true')) {
-//eof plugin Product Listing Sorter 1 of 2
+  if ($do_filter_list || isset($_GET['alpha_filter_id']) || ($check_for_alpha->RecordCount() > 0 && PRODUCT_LIST_ALPHA_SORTER == 'true') || (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true')) {
+// eof plugin Product Listing Sorter 1 of 2
   $form = zen_draw_form('filter', zen_href_link(FILENAME_DEFAULT), 'get') . '<label class="inputLabel">' .TEXT_SHOW . '</label>';
 ?>
 
@@ -92,11 +100,11 @@ if (PRODUCT_LIST_CATEGORIES_IMAGE_STATUS == 'true') {
 
   // draw alpha sorter
 require(DIR_WS_MODULES . zen_get_module_directory(FILENAME_PRODUCT_LISTING_ALPHA_SORTER));
-//plugin Product Listing Sorter 2 of 2
-if (PRODUCT_LISTING_SORTER === 'true') {
+// plugin Product Listing Sorter 2 of 2
+if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
     include(DIR_WS_MODULES . zen_get_module_directory(FILENAME_PRODUCT_LISTING_SORTER));
 }
-//eof plugin Product Listing Sorter 2 of 2
+// eof plugin Product Listing Sorter 2 of 2
 ?>
 </form>
 <?php

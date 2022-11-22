@@ -1,4 +1,11 @@
-<?php //plugin Product Listing Sorter: modification to function zen_create_sort_heading
+<?php
+
+declare(strict_types=1);
+/** Plugin Product Listing Sorter
+ * https://github.com/torvista/Zen_Cart-Product_Listing_Sorter
+ * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @torvista 25/11/2022
+*/
 /**
  * functions_general.php
  * General functions used throughout Zen Cart
@@ -21,8 +28,10 @@ function zen_create_sort_heading($sortby, $colnum, $heading)
     $sort_suffix = '';
 
     if ($sortby) {
-//plugin Product Listing Sorter 1 of 1: add 'product_listing_sorter' to zen_get_all_get_params
-      $sort_prefix = '<a href="' . zen_href_link($_GET['main_page'], zen_get_all_get_params(array('page', 'info', 'sort', 'product_listing_sorter')) . 'page=1&sort=' . $colnum . ($sortby == $colnum . 'a' ? 'd' : 'a')) . '" title="' . zen_output_string(TEXT_SORT_PRODUCTS . ($sortby == $colnum . 'd' || substr($sortby, 0, 1) != $colnum ? TEXT_ASCENDINGLY : TEXT_DESCENDINGLY) . TEXT_BY . $heading) . '" class="productListing-heading">' ;
+//plugin Product Listing Sorter 1 of 1
+//remove 'pls_sort' from zen_get_all_get_params so a column header sort overrides a pls_sort
+    //$sort_prefix = '<a href="' . zen_href_link($_GET['main_page'], zen_get_all_get_params(array('page', 'info', 'sort')) . 'page=1&sort=' . $colnum . ($sortby == $colnum . 'a' ? 'd' : 'a')) . '" title="' . zen_output_string(TEXT_SORT_PRODUCTS . ($sortby == $colnum . 'd' || substr($sortby, 0, 1) != $colnum ? TEXT_ASCENDINGLY : TEXT_DESCENDINGLY) . TEXT_BY . $heading) . '" class="productListing-heading">';
+      $sort_prefix = '<a href="' . zen_href_link($_GET['main_page'], zen_get_all_get_params(array('page', 'info', 'sort', 'pls_sort')) . 'page=1&sort=' . $colnum . ($sortby == $colnum . 'a' ? 'd' : 'a')) . '" title="' . zen_output_string(TEXT_SORT_PRODUCTS . ($sortby == $colnum . 'd' || substr($sortby, 0, 1) != $colnum ? TEXT_ASCENDINGLY : TEXT_DESCENDINGLY) . TEXT_BY . $heading) . '" class="productListing-heading">' ;
 //eof plugin Product Listing Sorter 1 of 1
         $sort_suffix = (substr($sortby, 0, 1) == $colnum ? (substr($sortby, 1, 1) == 'a' ? PRODUCT_LIST_SORT_ORDER_ASCENDING : PRODUCT_LIST_SORT_ORDER_DESCENDING) : '') . '</a>';
     }
@@ -208,9 +217,9 @@ function zen_get_buy_now_button($product_id, string $buy_now_link, $additional_l
             break;
         case ($button_check->fields['products_quantity'] <= 0 and SHOW_PRODUCTS_SOLD_OUT_IMAGE == '1'):
             global $template;
-            $image = BUTTON_IMAGE_SOLD_OUT; 
-            $alt = BUTTON_SOLD_OUT_ALT; 
-            $return_button = '<span class="text-center">' . zen_image($template->get_template_dir($image, DIR_WS_TEMPLATE, $current_page_base, 'buttons/' . $_SESSION['language'] . '/') . $image, $alt, '', '', '') . '</span>'; 
+            $image = BUTTON_IMAGE_SOLD_OUT;
+            $alt = BUTTON_SOLD_OUT_ALT;
+            $return_button = '<span class="text-center">' . zen_image($template->get_template_dir($image, DIR_WS_TEMPLATE, $current_page_base, 'buttons/' . $_SESSION['language'] . '/') . $image, $alt, '', '', '') . '</span>';
             $zco_notifier->notify('NOTIFY_ZEN_SOLD_OUT_IMAGE', array_merge($button_check->fields, ['products_id' => (int)$product_id]), $return_button);
             break;
         default:

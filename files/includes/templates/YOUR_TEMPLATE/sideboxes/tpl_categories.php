@@ -1,4 +1,11 @@
-<?php //plugin Product Listing Sorter: based on ZC158 responsive_classic
+<?php
+
+declare(strict_types=1);
+/** Plugin Product Listing Sorter
+ * https://github.com/torvista/Zen_Cart-Product_Listing_Sorter
+ * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @torvista 25/11/2022
+ */
 /**
  * Side Box Template
  *
@@ -31,10 +38,14 @@
      if (zen_get_product_types_to_category($box_categories_array[$i]['path']) == 3 or ($box_categories_array[$i]['top'] != 'true' and SHOW_CATEGORIES_SUBCATEGORIES_ALWAYS != 1)) {
         // skip if this is for the document box (==3)
       } else {
-//plugin Product Listing Sorter 1 of 1: maintains chosen sort order when navigating via categories sidebox
-      //$content .= '<li><a class="' . $new_style . '" href="' . zen_href_link(FILENAME_DEFAULT, $box_categories_array[$i]['path']) . '">';
-        $content .= '<li><a class="' . $new_style . '" href="' . zen_href_link(FILENAME_DEFAULT, $box_categories_array[$i]['path']) . '&' . (zen_get_all_get_params(['cPath', 'product_listing_sorter'])) . '">';
-//eof plugin Product Listing Sorter 1 of 1
+// plugin Product Listing Sorter 1 of 1
+if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
+    //add parameters to maintain chosen sort order when navigating via categories sidebox
+        $content .= '<li><a class="' . $new_style . '" href="' . zen_href_link(FILENAME_DEFAULT, $box_categories_array[$i]['path'] . (zen_get_all_get_params(['cPath','products_id']) !== '' ? '&' . zen_get_all_get_params(['cPath','products_id']) : '')) . '">';
+} else {
+        $content .= '<li><a class="' . $new_style . '" href="' . zen_href_link(FILENAME_DEFAULT, $box_categories_array[$i]['path']) . '">';
+}
+// eof plugin Product Listing Sorter 1 of 1
       if ($box_categories_array[$i]['current']) {
         if ($box_categories_array[$i]['has_sub_cat']) {
           $content .= '<span class="category-subs-parent">' . $box_categories_array[$i]['name'] . '</span>';

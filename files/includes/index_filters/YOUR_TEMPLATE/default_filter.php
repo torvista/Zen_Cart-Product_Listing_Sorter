@@ -1,16 +1,27 @@
-<?php //plugin Product Listing Sorter: add override of $_GET['sort'] from pls dropdown
+<?php
 
+declare(strict_types=1);
+/** Plugin Product Listing Sorter
+ * https://github.com/torvista/Zen_Cart-Product_Listing_Sorter
+ * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
+ * @torvista 25/11/2022
+ * phpstorm inspection
+ * @var string $cPath
+ * @var array $cPath_array
+ * @var string $current_category_id
+ * @var queryFactoryResult $db
+ */
 /**
  * default_filter.php  for index filters
  *
  * index filter for the default product type
  * show the products of a specified manufacturer
  *
- * @copyright Copyright 2003-2020 Zen Cart Development Team
+ * @copyright Copyright 2003-2022 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @todo Need to add/fine-tune ability to override or insert entry-points on a per-product-type basis
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: DrByte 2019 Jul 16 Modified in v1.5.7 $
+ * @version $Id: DrByte 2020 Jul 10 Modified in v1.5.8-alpha $
  */
 if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
@@ -62,59 +73,106 @@ $listing_sql = "SELECT " . $select_column_list . " p.products_id, p.products_typ
                 WHERE p.products_status = 1
                 " . $and . "
                 " . $alpha_sort;
-
+// plugin Product Listing Sorter 1 of 4
+$debug_pls = false;   // boolean: true/false, show debugging information
+if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
+//$pls_listing_sql only used for custom sort option
+    unset($pls_listing_sql);
+    if (isset($_GET['pls_sort']) && $_GET['pls_sort'] === '0') {
+        unset($_GET['pls_sort']);
+        //restore default
+        unset($_GET['sort']);
+    } elseif (isset($_GET['pls_sort'])) {
+        //equating the GET sort means any column headers will display +/- correctly too. But it means the sort value displayed in the address bar will be the previous value, not the current value = pls_sort
+        $_GET['sort'] = $_GET['pls_sort'];
+    }
+}
+// eof plugin Product Listing Sorter 1 of 4
 // set the default sort order setting from the Admin when not defined by customer
 if (!isset($_GET['sort']) and PRODUCT_LISTING_DEFAULT_SORT_ORDER != '') {
   $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
 }
-// plugin Product Listing Sorter PLS 1 of 3
-$debug_pls = false;//true/false, show debugging information
-$debug_pls_msg = '';
-$pls_order_by = '';
+// plugin Product Listing Sorter 2 of 4
 if ($debug_pls) {
-    $debug_pls_msg .= 'default_filter ' . __LINE__ . ': PRODUCT_LISTING_DEFAULT_SORT_ORDER =' . PRODUCT_LISTING_DEFAULT_SORT_ORDER . '<br>';
-    $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $_GET[\'sort\'] =' . $_GET['sort'] . '<br>';
+    $fileinfo = '<i>no_file_info</i>';
+    $backtrace = debug_backtrace();
+    if (!empty($backtrace[0]) && is_array($backtrace[0])) {
+        $fileinfo = $backtrace[0]['file'] . ":" . $backtrace[0]['line'];
+    }
+    echo '<b>default_filter</b>:    ' . __LINE__ . '<br>' .
+        'called from ' . $fileinfo . '<br>' .
+        '$_SESSION[\'sort\']=' . ($_SESSION['sort'] ?? 'not set') . '<br>' .
+        'PRODUCT_LISTING_DEFAULT_SORT_ORDER =' . PRODUCT_LISTING_DEFAULT_SORT_ORDER . '<br>' .
+        'alpha sort ' . (PRODUCT_LIST_ALPHA_SORTER === 'true' ? 'ACTIVE, $alpha_sort clause="' . $alpha_sort : 'INACTIVE') . '<br>' .
+        '$_GET[\'sort\'] =' . ($_GET['sort'] ?? 'not set') . '<br>' .
+        '$column_list =' . (isset($column_list) ? (is_array($column_list) ? '<pre>' . print_r($column_list, true) . '</pre>' : $column_list) : 'not set') . '<br>' .
+        '$_GET[\'pls_sort\'] =' . ($_GET['pls_sort'] ?? 'not set') . '<br>' .
+        '$cPath_array:<pre>' . print_r($cPath_array, true) . '</pre>' .
+        '$listing_sql="' . $listing_sql . '"<br>';
 }
-if ($debug_pls && PRODUCT_LIST_ALPHA_SORTER === 'true') $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $alpha_sort=' . $alpha_sort . '<br>';
 
-$product_listing_sorter_id = !empty($_GET['product_listing_sorter_id']) ? (int)$_GET['product_listing_sorter_id'] : '';
-if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id =' . $product_listing_sorter_id . '<br>';
+if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
+    //this file is parsed twice:https://github.com/zencart/zencart/issues/5396
+    //so need to (re)initialise it
+    $product_listing_sorter_options_custom = [];
 
-switch (true) { //add category-specific clauses
-    case (strncmp($cPath, '3_', 2) === 0): //in this case, everything under category 3_:  bikes
-        $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST_BIKES);//this constant is the drop-down-list text options: specific to this category branch
-        $product_listing_sorter_id = $product_listing_sorter_id === '' ? 1 : $product_listing_sorter_id;// set a default for THIS category if NO selection yet made by user
-        if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': Category root 3 specific options<br>';
-        break;
-    default:
-        $sorter_list_search = explode(';', '0:reset_placeholder;' . PRODUCT_LISTING_SORTER_LIST);//this constant is the drop-down-list text options
-}
-if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ':$sorter_list_search<pre>' . print_r($sorter_list_search, true) . '</pre>';
-
-if ($product_listing_sorter_id !== '' && array_key_exists($product_listing_sorter_id, $sorter_list_search)) {
-    if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $product_listing_sorter_id in $sorter_list_search<br>';
-
-    for ($j = 0, $n = count($sorter_list_search); $j < $n; $j++) {
-        if ($product_listing_sorter_id === $j) {//equate the id with the drop-down list to decide the sorting clause
-            $elements_sorter_list = explode(':', $sorter_list_search[$j]); //separate text and clause
-            $pattern_multi = str_replace(',', '', $elements_sorter_list[1]);//@TODO steve eats commas
-            $pls_order_by = " ORDER BY " . $pattern_multi;
+    //ADD a possible custom sort options definition per category/sub-categories
+    //$cPath_array is not always a full path, so make one
+    $cPath_full = array_reverse(explode('_', zen_get_generated_category_path_ids($current_category_id)));
+    if ($debug_pls) {
+        echo __LINE__ . ': $cPath_full:<pre>' . print_r($cPath_full, true) . '</pre>';
+    }
+    //check if a custom sort options list is defined for the current category or any of it's parents
+    foreach ($cPath_full as $key => $pls_category) {
+        if ($debug_pls) {
+            echo __LINE__ . ': parsing $cPath_full[' . $key . '][' . $pls_category . ']<br>';
+        }
+        if (defined('PRODUCT_LISTING_SORTER_CUSTOM_CATEGORY_' . $pls_category)) {
+            // make array from the define
+            $pls_custom_define = explode(';', constant('PRODUCT_LISTING_SORTER_CUSTOM_CATEGORY_' . $pls_category));
+            if ($debug_pls) {
+                echo __LINE__ . ': parsed PRODUCT_LISTING_SORTER_CUSTOM_CATEGORY_' . $pls_category . '<br>' .
+                    '$pls_custom_define:<pre>' . print_r($pls_custom_define, true) . '</pre>';
+            }
             break;
         }
     }
-}
-if ($debug_pls) $debug_pls_msg .= 'default_filter ' . __LINE__ . ': $pls_order_by=' . $pls_order_by . '<br>';
 
-if ($pls_order_by !== '') {
-        $listing_sql .= $pls_order_by;
-    if (!isset($_GET['sort']) && PRODUCT_LISTING_DEFAULT_SORT_ORDER == '') {//replicating assignment in clause below: avoids php warning for not set
-        $_GET['sort'] = PRODUCT_LISTING_DEFAULT_SORT_ORDER;
+    if (isset($pls_custom_define) && count($pls_custom_define) > 0) {
+        if (isset($column_list)) {
+            //the core sort ids are dynamic and assigned in sequential order based on the admin switches
+            $get_sort_last = count($column_list) - 1;
+        } else {
+            $get_sort_last = '';
+        }
+        foreach ($pls_custom_define as $pls_custom_option) {
+            $pls_custom_array = explode(':', $pls_custom_option);
+            //use the next sort id
+            $product_listing_sorter_options_custom[] = ['id' => $get_sort_last, 'text' => $pls_custom_array[0], 'order_by' => $pls_custom_array[1]];
+
+            if (isset($_GET['pls_sort']) && ($get_sort_last === (int)$_GET['pls_sort'])) {
+                if ($debug_pls) {
+                    echo __LINE__ . ': custom pls_sort found:' . $get_sort_last . '<br>';
+                }
+                $pls_listing_sql = $listing_sql . ' ORDER BY ' . $pls_custom_array[1];
+            }
+
+            $get_sort_last++;
+        }
+        if ($debug_pls) {
+            echo __LINE__ . ': $product_listing_sorter_options_custom:<pre>' . print_r($product_listing_sorter_options_custom, true) . '</pre>';
+        }
     }
-    } else {
-//eof PLS 1 of 3
-if (isset($column_list)) {
-  if ((!isset($_GET['sort'])) || (isset($_GET['sort']) && !preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {
-    for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
+}
+// eof plugin Product Listing Sorter 2 of 4
+// plugin Product Listing Sorter 3 of 4
+// add exception if a custom sort option has been used (which may be greater than 8)
+//if (isset($column_list)) {
+if (isset($column_list) && !isset($pls_listing_sql)) {
+// eof plugin Product Listing Sorter 3 of 4
+    if (!isset($_GET['sort'])
+      || !preg_match('/[1-8][ad]/', $_GET['sort'])
+      || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
       if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
         $_GET['sort'] = $i + 1 . 'a';
         $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
@@ -159,9 +217,14 @@ if (isset($column_list)) {
     }
   }
 }
-//PLS 2 of 3
+// plugin Product Listing Sorter 4 of 4
+if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true' && isset($pls_listing_sql)) {
+    $listing_sql = $pls_listing_sql;
+    if ($debug_pls) {
+        echo __LINE__ . '<br>' . '$listing_sql="' . $listing_sql . '"<br>';
+    }
 }
-//eof PLS 2 of 3
+// eof plugin Product Listing Sorter 4 of 4
 // optional Product List Filter
 if (PRODUCT_LIST_FILTER > 0) {
   if (isset($_GET['manufacturers_id']) && $_GET['manufacturers_id'] != '') {
@@ -185,11 +248,6 @@ if (PRODUCT_LIST_FILTER > 0) {
                        GROUP BY m.manufacturers_id, m.manufacturers_name
                        ORDER BY m.manufacturers_name";
   }
-//PLS 3 of 3 for php notice undefined index
-if ((isset($_GET['sort']) && $_GET['sort'] != 0) || $alpha_sort != 0 || $product_listing_sorter_id != 0) {//to make available for product info page prev/next
-		 $_SESSION['listing_sql'] = $listing_sql;
-}
-//eof PLS 3 of 3
   $do_filter_list = false;
   $filterlist = $db->Execute($filterlist_sql);
   if ($filterlist->RecordCount() > 1) {
