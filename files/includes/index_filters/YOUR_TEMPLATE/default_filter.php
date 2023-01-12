@@ -73,6 +73,7 @@ $listing_sql = "SELECT " . $select_column_list . " p.products_id, p.products_typ
                 WHERE p.products_status = 1
                 " . $and . "
                 " . $alpha_sort;
+
 // plugin Product Listing Sorter 1 of 4
 $debug_pls = false;   // boolean: true/false, show debugging information
 if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
@@ -139,7 +140,7 @@ if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
     }
 
     if (isset($pls_custom_define) && count($pls_custom_define) > 0) {
-        if (isset($column_list)) {
+if (isset($column_list)) {
             //the core sort ids are dynamic and assigned in sequential order based on the admin switches
             $get_sort_last = count($column_list) - 1;
         } else {
@@ -170,9 +171,8 @@ if (defined('PRODUCT_LISTING_SORTER') && PRODUCT_LISTING_SORTER === 'true') {
 //if (isset($column_list)) {
 if (isset($column_list) && !isset($pls_listing_sql)) {
 // eof plugin Product Listing Sorter 3 of 4
-    if (!isset($_GET['sort'])
-      || !preg_match('/[1-8][ad]/', $_GET['sort'])
-      || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
+  if ((!isset($_GET['sort'])) || (isset($_GET['sort']) && !preg_match('/[1-8][ad]/', $_GET['sort'])) || (substr($_GET['sort'], 0, 1) > sizeof($column_list))) {
+    for ($i = 0, $n = sizeof($column_list); $i < $n; $i++) {
       if (isset($column_list[$i]) && $column_list[$i] == 'PRODUCT_LIST_NAME') {
         $_GET['sort'] = $i + 1 . 'a';
         $listing_sql .= " ORDER BY p.products_sort_order, pd.products_name";
