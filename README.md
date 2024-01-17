@@ -1,3 +1,6 @@
+There is a better way to do this:
+https://github.com/zencart/zencart/discussions/6107
+
 # Zen Cart - Product Listing Sorter
 Branch 158 is a WORK IN PROGRESS for Zen Cart 1.58. DO NOT USE.
 
